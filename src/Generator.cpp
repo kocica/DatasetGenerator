@@ -21,6 +21,10 @@ void DtstGenerator::generate(std::vector<std::pair<cv::Point, cv::Point>>& b, cv
     int x = rand() % dif_x + min_x;
     int y = rand() % dif_y + min_y;
 
-    m2.copyTo(m(cv::Rect(x, y, m2.cols, m2.rows)));
+    if (((x + m2.cols) <= m.cols) && ((y + m2.rows) <= m.rows))
+    {
+      // Try to shift image to left side
+      m2.copyTo(m(cv::Rect(x, y, m2.cols, m2.rows)));
+    }
   }
 }
