@@ -19,8 +19,6 @@ using coords     = std::pair<cv::Point, cv::Point>;
 using ROI_buffer = std::vector<coords>;
 
 
-void
-mouseClick(int event, int x, int y, int flags, void *param);
+void mouseClick(int event, int x, int y, int flags, void *param);
 
-ROI_buffer
-getRegionsOfInterest(cv::Mat& m);
+ROI_buffer getRegionsOfInterest(cv::Mat& m);
