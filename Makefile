@@ -11,14 +11,14 @@
 BIN_NAME   = dataset-generator
 
 DOC        = doc
-SRC        =
+SRC        = src
 
 CC         = g++
 CFLAGS     = -std=c++11
 LDFLAGS    = `pkg-config --libs opencv`
 
-HEADERS    = $(wildcard *.h)
-SOURCES    = $(wildcard *.cpp)
+HEADERS    = $(wildcard $(SRC)/*.h)
+SOURCES    = $(wildcard $(SRC)/*.cpp)
 OBJS       = $(patsubst %.cpp, %.o, $(SOURCES))
 
 ################## Compilation ##################
@@ -37,4 +37,4 @@ $(BIN_NAME): $(HEADERS) $(SOURCES) $(OBJS)
 
 
 clean:
-	rm -f $(BIN_NAME) *.o
+	rm -f $(BIN_NAME) $(SRC)/*.o

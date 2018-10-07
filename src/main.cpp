@@ -8,11 +8,11 @@
 int main()
 {
 	int         imgClass          = 0;
-	std::string pathToBackgrounds = "./../img/",
-				pathToImages      = "./../img/",
+	std::string pathToBackgrounds = "./img/",
+				pathToImages      = "./img/",
 				backgroundName    = "background.jpg",
 				imageName         = "traffic_sign.png",
-				csvName           = "testAnnot.txt";
+				csvName           = "./annotations/testAnnot.txt";
 	cv::Mat     background,
 				trainingImg;
  
