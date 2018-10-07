@@ -24,15 +24,19 @@ DtstGenerator::~DtstGenerator()
 
 void DtstGenerator::generate(std::vector<std::pair<cv::Point, cv::Point>>& b, cv::Mat& m, cv::Mat& m2)
 {
-	for (auto& it : b)
-	{
+	//int noBbox = rand() % b.size();
+	static int noBbox = 0;
+	auto bbox  = b.at(noBbox);
+
+	//for (auto& it : b)
+	//{
 		cv::Mat tmpImg;
 		m2.copyTo(tmpImg);
 
-		int max_x = std::max(it.first.x, it.second.x);
-		int min_x = std::min(it.first.x, it.second.x);
-		int max_y = std::max(it.first.y, it.second.y);
-		int min_y = std::min(it.first.y, it.second.y);
+		int max_x = std::max(bbox.first.x, bbox.second.x);
+		int min_x = std::min(bbox.first.x, bbox.second.x);
+		int max_y = std::max(bbox.first.y, bbox.second.y);
+		int min_y = std::min(bbox.first.y, bbox.second.y);
 		int dif_x = max_x - min_x;
 		int dif_y = max_y - min_y;
 
@@ -65,7 +69,9 @@ void DtstGenerator::generate(std::vector<std::pair<cv::Point, cv::Point>>& b, cv
 
 			tmpImg.copyTo( m (cv::Rect {x, y, tmpImg.cols, tmpImg.rows} ) );
 		}
-	}
+	//}
+
+	noBbox = noBbox == (b.size() - 1) ? 0 : noBbox + 1;
 }
 
 void DtstGenerator::createAnnotation(cv::Mat& m, cv::Mat& m2, int& x, int& y)

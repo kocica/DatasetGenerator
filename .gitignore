@@ -1,6 +1,18 @@
 # Bin name
 dataset-generator
 
+# Dataset folder
+img/*
+
+# Output
+out/*
+
+# vscode
+.vscode/*
+
+
+
+
 # Prerequisites
 *.d
 

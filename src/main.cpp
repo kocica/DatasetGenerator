@@ -10,38 +10,126 @@
 
 #include "ROI.hpp"
 #include "Generator.hpp"
+//#include <filesystem>
 
-int main()
+/** @brief Buffer of images */
+using ImgBuffer = std::vector<cv::Mat>;
+/** @brief Buffer of strings */
+using StrBuffer = std::vector<std::string>;
+
+const std::string annotExt   = ".txt";
+const std::string imageExt   = ".jpg";
+const std::string out        = "out/";
+
+void printUsage();
+void loadImages(const std::string& path, ImgBuffer& imgs);
+int parseArgs(int argc, char **argv, std::string& pathBgs, std::string& pathImgs, cv::Size& s);
+
+/**
+ * @brief Entry point
+ */
+int main(int argc, char **argv)
 {
-	int         imgClass          = 0;
-	std::string pathToBackgrounds = "./img/",
-				pathToImages      = "./img/",
-				backgroundName    = "background.jpg",
-				imageName         = "traffic_sign.png",
-				csvName           = "./annotations/testAnnot.txt";
-	cv::Mat     background,
-				trainingImg;
- 
-	// Load images
-	background  = cv::imread(pathToBackgrounds + backgroundName, CV_LOAD_IMAGE_COLOR);
-	trainingImg = cv::imread(pathToImages + imageName, CV_LOAD_IMAGE_COLOR);
- 
-	// Output annotation file
-	std::ofstream annotFile(csvName);
- 
+	// Locals
+	int         imgClass = 0, imgCounter = 0, ret;
+	//cv::Mat     background, trainingImg;
+	std::string pathToBackgrounds, pathToImages, backgroundName, imageName, csvName;
+	ImgBuffer   bgs, imgs;
+	cv::Size    size;
+
+	// Parse arguments
+	if ((ret = parseArgs(argc, argv, pathToBackgrounds, pathToImages, size)) != 0)
+	{
+		return ret;
+	}
+
+	// Load iamges
+	loadImages(pathToBackgrounds, bgs);
+	loadImages(pathToImages, imgs);
+	
+	// Load example background
+	cv::Mat exampleBg = cv::imread("data/roi-selection.png");
+	cv::resize(exampleBg, exampleBg, size);
+
 	// Regions of interest selection
 	ROI_buffer roiBuffer;
-	roiBuffer = getRegionsOfInterest(background);
- 
-	// Image & annotation generator
-	DtstGenerator gen(annotFile, imgClass);
-	gen.generate(roiBuffer, background, trainingImg);
- 
-	// Show image
-	cv::imshow("bbox", background);
+	roiBuffer = getRegionsOfInterest(exampleBg);
+
+	int numberOfImages = bgs.size() > imgs.size() ? imgs.size() : bgs.size();
+	cv::Mat bg, img;
+
+	// For each image
+	for (imgCounter = 0; imgCounter < numberOfImages; imgCounter++)
+	{
+		bg  = bgs.at(imgCounter);
+		img = imgs.at(imgCounter);
+
+		// Resize images
+		cv::resize(bg, bg, size);
+		cv::resize(img, img, cv::Size{100, 100});
+
+		// Output annotation file
+		std::ofstream annotFile(out + std::to_string(imgCounter) + annotExt);
+	
+		// Image & annotation generator
+		DtstGenerator gen(annotFile, imgClass);
+		gen.generate(roiBuffer, bg, img);
+	
+		// Show image
+		//cv::imshow("bbox", bg);
+		// Save img
+		imwrite(out + std::to_string(imgCounter) + imageExt, bg);
+	}
  
 	// Free resources
-	cv::waitKey(0);
+	//cv::waitKey(0);
 	cv::destroyAllWindows();
 	return 0;
 }
+
+void printUsage()
+{
+	std::cout << "Usage: dataset_generator" << std::endl;
+}
+
+int parseArgs(int argc, char **argv, std::string& pathBgs, std::string& pathImgs, cv::Size& s)
+{
+	if (argc < 5)
+	{
+		printUsage();
+		return 1;
+	}
+
+	pathBgs  = argv[1];
+	pathImgs = argv[2];
+	s        = cv::Size{ std::stoi(argv[3]), std::stoi(argv[4]) };
+
+	return 0;
+}
+
+void loadImages(const std::string& path, ImgBuffer& imgs)
+{
+	StrBuffer strBuffer;
+	cv::glob(path, strBuffer, false);
+
+	for (auto& it : strBuffer)
+	{
+		imgs.push_back(cv::imread(it));
+	}
+}
+
+/*
+StrBuffer getDirectories(const std::string& path)
+{
+    StrBuffer r;
+    for(auto& p : std::filesystem::recursive_directory_iterator(path))
+	{
+        if(p.status().type() == std::filesystem::file_type::directory)
+		{
+            r.push_back(p.path().string());
+		}
+	}
+
+    return r;
+}
+*/

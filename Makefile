@@ -14,7 +14,7 @@ DOC        = doc
 SRC        = src
 
 CC         = g++
-CFLAGS     = -std=c++11
+CFLAGS     = -std=c++17
 LDFLAGS    = `pkg-config --libs opencv`
 
 HEADERS    = $(wildcard $(SRC)/*.h)
