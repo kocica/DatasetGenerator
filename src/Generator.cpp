@@ -1,6 +1,6 @@
 /**
  * @file    Generator.cpp
- * @author	Filip Kocica <xkocic01@stud.fit.vutbr.cz>
+ * @author  Filip Kocica <xkocic01@stud.fit.vutbr.cz>
  * @date    05/10/2018
  *
  * Training dataset generator

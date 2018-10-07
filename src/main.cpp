@@ -1,6 +1,6 @@
 /**
  * @file    main.cpp
- * @author	Filip Kocica <xkocic01@stud.fit.vutbr.cz>
+ * @author  Filip Kocica <xkocic01@stud.fit.vutbr.cz>
  * @date    05/10/2018
  *
  * Training dataset generator
@@ -32,7 +32,6 @@ int main(int argc, char **argv)
 {
 	// Locals
 	int         imgClass = 0, imgCounter = 0, ret;
-	//cv::Mat     background, trainingImg;
 	std::string pathToBackgrounds, pathToImages, backgroundName, imageName, csvName;
 	ImgBuffer   bgs, imgs;
 	cv::Size    size;
@@ -66,7 +65,7 @@ int main(int argc, char **argv)
 
 		// Resize images
 		cv::resize(bg, bg, size);
-		cv::resize(img, img, cv::Size{100, 100});
+		cv::resize(img, img, cv::Size {100, 100});
 
 		// Output annotation file
 		std::ofstream annotFile(out + std::to_string(imgCounter) + annotExt);
