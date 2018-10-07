@@ -21,6 +21,11 @@ void mouseClick(int event, int x, int y, int flags, void *param)
 
      case CV_EVENT_LBUTTONUP:
      {
+        if (x > img.cols || y > img.rows)
+        {
+          return;
+        }
+
         cv::Point pt2{x, y};
 
         cv::Mat roi(img, cv::Rect{pt, pt2});

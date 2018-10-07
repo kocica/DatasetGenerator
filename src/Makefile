@@ -3,24 +3,22 @@
 # @author  Filip Kocica                                       #
 # @date    05/10/2018                                         #
 #                                                             #
-#                                                             #
+# Dataset generator makefile                                  #
 ###############################################################
 
 ################## Build constants ##############
+
 BIN_NAME   = dataset-generator
 
-DOC        =
+DOC        = doc
+SRC        =
 
 CC         = g++
-CFLAGS     = -std=c++14
+CFLAGS     = -std=c++11
+LDFLAGS    = `pkg-config --libs opencv`
 
-LDFLAGS    =
-LIBS       =
-
-SRC        = .
-
-HEADERS    = $(wildcard $(SRC)/*.hpp)
-SOURCES    = $(wildcard $(SRC)/*.cpp)
+HEADERS    = $(wildcard *.h)
+SOURCES    = $(wildcard *.cpp)
 OBJS       = $(patsubst %.cpp, %.o, $(SOURCES))
 
 ################## Compilation ##################
@@ -28,8 +26,9 @@ OBJS       = $(patsubst %.cpp, %.o, $(SOURCES))
 all: $(BIN_NAME)
 
 $(BIN_NAME): $(HEADERS) $(SOURCES) $(OBJS)
+	$(CC) $(CFLAGS) $(OBJS) -o $@ $(LDFLAGS)
 
-%.o: %.cpp %.hpp
+%.o: %.cpp
 	$(CC) $(CFLAGS) -c $< -o $@
 
 ################## Pack/Clean ##################
@@ -38,4 +37,4 @@ $(BIN_NAME): $(HEADERS) $(SOURCES) $(OBJS)
 
 
 clean:
-	rm -f $(BIN_NAME) $(SRC)/*.o
+	rm -f $(BIN_NAME) *.o
