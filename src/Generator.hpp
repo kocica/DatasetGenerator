@@ -75,13 +75,16 @@ protected:
 private:
 	/** @brief Annotation output file */
 	std::ofstream&  m_out;
-
 	/** @brief Image class number */
 	int             m_class;
-
 	/** @brief RNG */
 	std::mt19937    m_rng;
+
+
+	/** @brief 2   Random distribution */
 	std::uniform_int_distribution<std::mt19937::result_type> dist2;
+	/** @brief 30  Random distribution */
 	std::uniform_int_distribution<std::mt19937::result_type> dist30;
+	/** @brief 100 Random distribution */
 	std::uniform_int_distribution<std::mt19937::result_type> dist100;
 };

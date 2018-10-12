@@ -205,15 +205,20 @@ void DtstGenerator::rotateAngle(cv::Mat& img, double angle)
 	double offsetX, offsetY;
 	double width = img.size().width;
 	double height = img.size().height;
+
 	cv::Point2d center = cv::Point2d (width / 2, height / 2);
 	cv::Rect bounds = cv::RotatedRect (center, img.size(), angle).boundingRect();
 	cv::Mat resized = cv::Mat::zeros (bounds.size(), img.type());
+
 	offsetX = (bounds.width - width) / 2;
 	offsetY = (bounds.height - height) / 2;
+
 	cv::Rect roi = cv::Rect (offsetX, offsetY, width, height);
 	img.copyTo (resized (roi));
 	center += cv::Point2d (offsetX, offsetY);
+
 	cv::Mat M = cv::getRotationMatrix2D (center, angle, 1.0);
 	cv::warpAffine (resized, resized, M, resized.size());
+	
 	resized.copyTo(img);
 }
