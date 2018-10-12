@@ -16,6 +16,9 @@
 #include <time.h>
 #include <algorithm>
 #include <fstream>
+#include <chrono>
+#include <thread>
+#include <random>
 
 // OpenCV
 #include <opencv2/core/core.hpp>
@@ -64,10 +67,21 @@ protected:
    */
   void copy2bg(cv::Mat& bg, cv::Mat& img, cv::Mat& alpha, int& x, int& y);
 
+  /**
+   * @brief
+   */
+  void rotateAngle(cv::Mat& img, double angle);
+
 private:
 	/** @brief Annotation output file */
 	std::ofstream&  m_out;
 
 	/** @brief Image class number */
 	int             m_class;
+
+	/** @brief RNG */
+	std::mt19937    m_rng;
+	std::uniform_int_distribution<std::mt19937::result_type> dist2;
+	std::uniform_int_distribution<std::mt19937::result_type> dist30;
+	std::uniform_int_distribution<std::mt19937::result_type> dist100;
 };

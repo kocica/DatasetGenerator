@@ -58,7 +58,7 @@ int main(int argc, char **argv)
 	cv::Mat bg;
 
 	// For each image
-	for (imgCounter = 0; imgCounter < 120; imgCounter++)
+	for (imgCounter = 0; imgCounter < numberOfImages; imgCounter++)
 	{
 		bg  = bgs.at(imgCounter);
 
@@ -75,7 +75,7 @@ int main(int argc, char **argv)
 		// Show image
 		//cv::imshow("bbox", bg);
 		// Save img
-		cv::resize(bg, bg, cv::Size{416, 416});
+		//cv::resize(bg, bg, cv::Size{416, 416});
 		imwrite(out + std::to_string(imgCounter) + imageExt, bg);
 	}
 
