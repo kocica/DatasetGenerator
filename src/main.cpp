@@ -44,8 +44,8 @@ int main(int argc, char **argv)
 
 	// Load iamges
 	loadImages(pathToBackgrounds, bgs);
-	loadImages(pathToImages, imgs);
-	
+	cv::Mat img = cv::imread("data/stop.png", cv::IMREAD_UNCHANGED);
+
 	// Load example background
 	cv::Mat exampleBg = cv::imread("data/roi-selection.png");
 	cv::resize(exampleBg, exampleBg, size);
@@ -54,32 +54,31 @@ int main(int argc, char **argv)
 	ROI_buffer roiBuffer;
 	roiBuffer = getRegionsOfInterest(exampleBg);
 
-	int numberOfImages = bgs.size() > imgs.size() ? imgs.size() : bgs.size();
-	cv::Mat bg, img;
+	int numberOfImages = bgs.size();
+	cv::Mat bg;
 
 	// For each image
-	for (imgCounter = 0; imgCounter < numberOfImages; imgCounter++)
+	for (imgCounter = 0; imgCounter < 120; imgCounter++)
 	{
 		bg  = bgs.at(imgCounter);
-		img = imgs.at(imgCounter);
 
 		// Resize images
 		cv::resize(bg, bg, size);
-		cv::resize(img, img, cv::Size {100, 100});
 
 		// Output annotation file
 		std::ofstream annotFile(out + std::to_string(imgCounter) + annotExt);
-	
+
 		// Image & annotation generator
 		DtstGenerator gen(annotFile, imgClass);
 		gen.generate(roiBuffer, bg, img);
-	
+
 		// Show image
 		//cv::imshow("bbox", bg);
 		// Save img
+		cv::resize(bg, bg, cv::Size{416, 416});
 		imwrite(out + std::to_string(imgCounter) + imageExt, bg);
 	}
- 
+
 	// Free resources
 	//cv::waitKey(0);
 	cv::destroyAllWindows();
@@ -108,7 +107,7 @@ int parseArgs(int argc, char **argv, std::string& pathBgs, std::string& pathImgs
 
 void loadImages(const std::string& path, ImgBuffer& imgs)
 {
-	StrBuffer strBuffer;
+	std::vector<cv::String> strBuffer;
 	cv::glob(path, strBuffer, false);
 
 	for (auto& it : strBuffer)
