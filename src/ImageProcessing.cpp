@@ -85,6 +85,7 @@ namespace ImageProcessing
 
         if (b)
         {
+            //v *= 2;
             subtract(img, v, img);
         }
         else

@@ -31,8 +31,8 @@ int main(int argc, char **argv)
 	}
 
 	// Load iamges
-	Utils::loadImages(pathToBackgrounds, bgs);
-	cv::Mat img = cv::imread("data/stop.png", cv::IMREAD_UNCHANGED);
+	Utils::loadImages(pathToBackgrounds, bgs,  cv::IMREAD_COLOR);
+	Utils::loadImages(pathToImages,      imgs, cv::IMREAD_UNCHANGED);
 
 	// Load example background
 	cv::Mat exampleBg = cv::imread("data/roi-selection.png");
@@ -46,6 +46,7 @@ int main(int argc, char **argv)
 	cv::Mat bg;
 
 	// For each image
+	size_t i = 0;
 	for (imgCounter = 0; imgCounter < numberOfImages; imgCounter++)
 	{
 		bg  = bgs.at(imgCounter);
@@ -58,13 +59,15 @@ int main(int argc, char **argv)
 
 		// Image & annotation generator
 		DtstGenerator gen(annotFile, imgClass);
-		gen.generate(roiBuffer, bg, img);
+		gen.generate(roiBuffer, bg, imgs.at(i));
 
 		// Show image
 		//cv::imshow("bbox", bg);
 		// Save img
 		//cv::resize(bg, bg, cv::Size{416, 416});
 		imwrite(Utils::out + std::to_string(imgCounter) + Utils::imageExt, bg);
+
+		i = (i == (imgs.size() - 1)) ? 0 : i+1;
 	}
 
 	// Free resources

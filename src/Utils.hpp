@@ -39,8 +39,9 @@ namespace Utils
      * 
      * @param [in] path Directory
      * @param [out] imgs Buffer of loaded images
+     * @param [in] mode Mode of imread
      */
-    void loadImages(const std::string& path, ImgBuffer& imgs);
+    void loadImages(const std::string& path, ImgBuffer& imgs, const int& mode);
 
     /**
      * @brief Arguments parser

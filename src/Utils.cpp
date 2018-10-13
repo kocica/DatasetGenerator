@@ -27,14 +27,14 @@ namespace Utils
         return 0;
     }
 
-    void loadImages(const std::string& path, ImgBuffer& imgs)
+    void loadImages(const std::string& path, ImgBuffer& imgs, const int& mode)
     {
         std::vector<cv::String> strBuffer;
         cv::glob(path, strBuffer, false);
 
         for (auto& it : strBuffer)
         {
-            imgs.push_back(cv::imread(it));
+            imgs.push_back(cv::imread(it, mode));
         }
     }
 
@@ -51,7 +51,7 @@ namespace Utils
             }
         }
         */
-       
+
         return r;
     }
 
