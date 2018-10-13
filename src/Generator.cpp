@@ -11,16 +11,16 @@
 #include "Generator.hpp"
 
 DtstGenerator::DtstGenerator(std::ofstream& out, int imgClass)
-: m_out { out }
+: m_out   { out }
 , m_class { imgClass }
 {
 	srand(time(NULL));
 	m_rng.seed(std::random_device()());
 
 	dist2   = std::uniform_int_distribution<std::mt19937::result_type> (0, 1);
+	dist20  = std::uniform_int_distribution<std::mt19937::result_type> (0, 20);
 	dist30  = std::uniform_int_distribution<std::mt19937::result_type> (0, 30);
-	dist50  = std::uniform_int_distribution<std::mt19937::result_type> (0, 50);
-	dist100 = std::uniform_int_distribution<std::mt19937::result_type> (0, 100);
+	dist100 = std::uniform_int_distribution<std::mt19937::result_type> (0, 50);
 }
 
 DtstGenerator::~DtstGenerator()
@@ -39,7 +39,7 @@ void DtstGenerator::generate(std::vector<std::pair<cv::Point, cv::Point>>& b, cv
 
 	// Blur image with random kernel size
 	rng_rot = dist2 (m_rng);
-	rng_val = dist30(m_rng);
+	rng_val = dist20(m_rng);
 	rng_val = (rng_val % 2) == 0 ? rng_val + 1: rng_val;
 
 	if (rng_rot)
@@ -71,7 +71,7 @@ void DtstGenerator::generate(std::vector<std::pair<cv::Point, cv::Point>>& b, cv
 	// Rotate image left/right
 	rng_dir = dist2 (m_rng);
 	rng_rot = dist2 (m_rng);
-	rng_val = dist30(m_rng);     // Value [0; 30]
+	rng_val = dist20(m_rng);     // Value [0; 20]
 
 	if (rng_rot)
 	{
