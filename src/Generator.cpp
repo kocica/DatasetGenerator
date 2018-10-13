@@ -19,6 +19,7 @@ DtstGenerator::DtstGenerator(std::ofstream& out, int imgClass)
 
 	dist2   = std::uniform_int_distribution<std::mt19937::result_type> (0, 1);
 	dist30  = std::uniform_int_distribution<std::mt19937::result_type> (0, 30);
+	dist50  = std::uniform_int_distribution<std::mt19937::result_type> (0, 50);
 	dist100 = std::uniform_int_distribution<std::mt19937::result_type> (0, 100);
 }
 
@@ -29,121 +30,130 @@ DtstGenerator::~DtstGenerator()
 
 void DtstGenerator::generate(std::vector<std::pair<cv::Point, cv::Point>>& b, cv::Mat m, cv::Mat m2)
 {
-	std::vector<cv::Mat> channels;
+	// RNG values
+	int rng_dir,            // Should the image be rotated to "left" or "right"
+	    rng_rot,            // Should image be rotated / blured
+		rng_val;            // Pseudo-random generated value
 
+
+
+	// Blur image with random kernel size
+	rng_rot = dist2 (m_rng);
+	rng_val = dist30(m_rng);
+	rng_val = (rng_val % 2) == 0 ? rng_val + 1: rng_val;
+
+	if (rng_rot)
+	{
+		cv::GaussianBlur(m2, m2, cv::Size(rng_val, rng_val), 0, 0);
+	}
+
+
+
+	// Get alpha channel from transparent image
+	std::vector<cv::Mat> channels;
 	split(m2, channels);
-	cv::Mat alpha;               // Get alpha channel from transparent image
+	cv::Mat alpha;
 	channels[3].copyTo(alpha);
 
-	cv::cvtColor(m2, m2, cv::COLOR_BGRA2BGR); // Convert transparent image to BGR (3 channel) img
 
-	cv::resize(m2, m2, cv::Size(100, 100));
+
+	// Convert transparent image to BGR (3 channel) img
+	cv::cvtColor(m2, m2, cv::COLOR_BGRA2BGR);
+
+
+
+	// Resize inserted image to 100x100
+	cv::resize(m2,    m2,    cv::Size(100, 100));
 	cv::resize(alpha, alpha, cv::Size(100, 100));
 	
-	int d = dist2(m_rng);                //rand() % 2;    // Should the image be rotated to "left" or "right"
-	int a = dist30(m_rng);               //rand() % 31;   // Pseudo-random generated angle [0;30]
-	int r = dist2(m_rng);                //rand() % 2;    // Should image be rotated
-	if (r)
+
+
+	// Rotate image left/right
+	rng_dir = dist2 (m_rng);
+	rng_rot = dist2 (m_rng);
+	rng_val = dist30(m_rng);     // Value [0; 30]
+
+	if (rng_rot)
 	{
-		rotateAngle(m2,    d == 0 ? a : -a);
-		rotateAngle(alpha, d == 0 ? a : -a);
+		ImageProcessing::rotateAngle(m2,    rng_dir == 0 ? rng_val : -rng_val);
+		ImageProcessing::rotateAngle(alpha, rng_dir == 0 ? rng_val : -rng_val);
 	}
+
+
+
+	// Rotate image Z
+	rng_dir = dist2 (m_rng);
+	rng_rot = dist2 (m_rng);
+	rng_val = dist30(m_rng);     // Value [0; 30]
+
+	if (rng_rot)
+	{
+		rng_val = rng_dir == 0 ? rng_val : -rng_val;
+		rng_val = 90 + rng_val;
+
+		ImageProcessing::rotateImage(m2,    m2,    90, rng_val, 90, 0, 0, 200, 200);
+		ImageProcessing::rotateImage(alpha, alpha, 90, rng_val, 90, 0, 0, 200, 200);
+	}
+
 
 	// Select random bounding box
 	std::uniform_int_distribution<std::mt19937::result_type> distN(0, b.size() - 1);
-	int noBbox = distN(m_rng);            //rand() % b.size();
-	//static int noBbox = 0;
+	int noBbox = distN(m_rng);
 	auto bbox  = b.at(noBbox);
 
-	//for (auto& it : b)
-	//{
-		cv::Mat tmpImg;
-		m2.copyTo(tmpImg);
+	int max_x = std::max(bbox.first.x, bbox.second.x);
+	int min_x = std::min(bbox.first.x, bbox.second.x);
+	int max_y = std::max(bbox.first.y, bbox.second.y);
+	int min_y = std::min(bbox.first.y, bbox.second.y);
 
-		int max_x = std::max(bbox.first.x, bbox.second.x);
-		int min_x = std::min(bbox.first.x, bbox.second.x);
-		int max_y = std::max(bbox.first.y, bbox.second.y);
-		int min_y = std::min(bbox.first.y, bbox.second.y);
-		//int dif_x = max_x - min_x;
-		//int dif_y = max_y - min_y;
 
-		// Select random position in bounding box
-		std::uniform_int_distribution<std::mt19937::result_type> distN2(min_x, max_x);
-		std::uniform_int_distribution<std::mt19937::result_type> distN3(min_y, max_y);
 
-		int x = distN2(m_rng);              //rand() % dif_x + min_x;  
-		int y = distN3(m_rng);              //rand() % dif_y + min_y;
+	// Generate random position in bounding box
+	std::uniform_int_distribution<std::mt19937::result_type> distN2(min_x, max_x);
+	std::uniform_int_distribution<std::mt19937::result_type> distN3(min_y, max_y);
 
-		// Resize image due to its position in background
-		resize(tmpImg, x, m.cols/2);
-		resize(alpha, x, m.cols/2);
+	int x = distN2(m_rng); 
+	int y = distN3(m_rng);
 
-		// Save data to annotation file
-		createAnnotation(m, tmpImg, x, y);
 
-		// Copy image to background
-		if (((x + tmpImg.cols) <= m.cols) && ((y + tmpImg.rows) <= m.rows))
-		{
-			copy2bg(m, tmpImg, alpha, x, y);
-		}
-		else
-		{
-			// Shift image left
-			if ((x + tmpImg.cols) > m.cols)
-			{
-				x -= (x + tmpImg.cols) - m.cols;
-			}
-			// Shift image up
-			if ((y + tmpImg.rows) > m.rows)
-			{
-				y -= (y + tmpImg.rows) - m.rows;
-			}
 
-			copy2bg(m, tmpImg, alpha, x, y);
-		}
-	//}
+	// Resize image due to its position in background
+	ImageProcessing::resize(m2,     x, m.cols/2);
+	ImageProcessing::resize(alpha,  x, m.cols/2);
 
-	noBbox = noBbox == (b.size() - 1) ? 0 : noBbox + 1;
-	std::this_thread::sleep_for(std::chrono::milliseconds(250));
-}
 
-void DtstGenerator::copy2bg(cv::Mat& bg, cv::Mat& img, cv::Mat& alpha, int& x, int& y)
-{
-	int sizex = img.cols;
-	int sizey = img.rows;
-	cv::Mat subImg = bg(cv::Range(y, y + sizey), cv::Range(x, x + sizex));
 
-	img.convertTo(img, CV_32FC3);
-	subImg.convertTo(subImg, CV_32FC3);
+	// Save data to annotation file
+	createAnnotation(m, m2, x, y);
 
-	cv::cvtColor(alpha, alpha, cv::COLOR_GRAY2BGR);
-	alpha.convertTo(alpha, CV_32FC3, 1.0/255);
 
-	int r = dist100(m_rng);     // Pseudo-random generated amount of luminescence increase/decrease value
-	int b = dist2(m_rng);       // Should luminescence be increased or decreased
-	if (b)
+
+	// Copy image to background
+	if (((x + m2.cols) <= m.cols) && ((y + m2.rows) <= m.rows))
 	{
-		subtract(img, r, img);
+		// OK
 	}
 	else
 	{
-		add(img, r, img);
+		// Shift image left
+		if ((x + m2.cols) > m.cols)
+		{
+			x -= (x + m2.cols) - m.cols;
+		}
+		// Shift image up
+		if ((y + m2.rows) > m.rows)
+		{
+			y -= (y + m2.rows) - m.rows;
+		}
 	}
 
-	multiply(alpha, img, img);
 
-	cv::Mat ouImage = cv::Mat::zeros(img.size(), img.type());
 
-	// Multiply the foreground with the alpha matte
-	multiply(alpha, img, img);
+	// Increase/decrease luminescence and copy img to background
+	rng_rot = dist2  (m_rng);
+	rng_val = dist100(m_rng);     // Value [0; 100]
 
-	// Multiply the background with ( 1 - alpha )
-	multiply(cv::Scalar::all(1.0)-alpha, subImg, subImg);
-
-	// Add the masked foreground and background.
-	add(img, subImg, ouImage);
-
-	ouImage.copyTo(bg(cv::Rect(x, y, sizex, sizey)));
+	ImageProcessing::copy2bg(m, m2, alpha, x, y, rng_rot, rng_val);
 }
 
 void DtstGenerator::createAnnotation(cv::Mat& m, cv::Mat& m2, int& x, int& y)
@@ -169,56 +179,4 @@ void DtstGenerator::createAnnotation(cv::Mat& m, cv::Mat& m2, int& x, int& y)
 
 	cv::rectangle(m, pt, pt2, cv::Scalar{0, 255, 0});
 	*/
-}
-
-void DtstGenerator::resize(cv::Mat& m, int pos, int mid)
-{
-	double ratio = 0;
-
-	if (pos > mid)
-	{
-		ratio = (pos - mid) / (double) mid;
-	}
-	else
-	{
-		ratio = 1 - (pos / (double) mid);
-	}
-
-	/*
-	// DEBUG, TODO: Remove
-	std::cout << "pos:     " << pos                    << std::endl
-	<< "mid:     " << mid                    << std::endl
-	<< "m.rows:  " << m.rows                 << std::endl
-	<< "m.cols:  " << m.cols                 << std::endl
-	<< "ratio:   " << ratio                  << std::endl
-	<< "ratio r: " << (int) (ratio * m.rows) << std::endl
-	<< "ratio c: " << (int) (ratio * m.cols) << std::endl
-	;
-	*/
-
-	cv::resize(m, m, cv::Size{(int) (ratio * m.rows), (int) (ratio * m.cols)});
-}
-
-
-void DtstGenerator::rotateAngle(cv::Mat& img, double angle)
-{
-	double offsetX, offsetY;
-	double width = img.size().width;
-	double height = img.size().height;
-
-	cv::Point2d center = cv::Point2d (width / 2, height / 2);
-	cv::Rect bounds = cv::RotatedRect (center, img.size(), angle).boundingRect();
-	cv::Mat resized = cv::Mat::zeros (bounds.size(), img.type());
-
-	offsetX = (bounds.width - width) / 2;
-	offsetY = (bounds.height - height) / 2;
-
-	cv::Rect roi = cv::Rect (offsetX, offsetY, width, height);
-	img.copyTo (resized (roi));
-	center += cv::Point2d (offsetX, offsetY);
-
-	cv::Mat M = cv::getRotationMatrix2D (center, angle, 1.0);
-	cv::warpAffine (resized, resized, M, resized.size());
-	
-	resized.copyTo(img);
 }

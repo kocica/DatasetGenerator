@@ -28,17 +28,17 @@ using ROI_buffer = std::vector<coords>;
 /**
  * @brief Mouse click event handler
  * 
- * @param event [in] event type
- * @param x [in] vertical position
- * @param y [in] horizontal position
- * @param param [in] event param
+ * @param [in] event event type
+ * @param [in] x vertical position
+ * @param [in] y horizontal position
+ * @param [in] param event param
  */
 void mouseClick(int event, int x, int y, int flags, void *param);
 
 /**
  * @brief Selection of ROIs by user
  * 
- * @param m [in, out] Input image
+ * @param [in, out] m Input image
  * @return Buffer of ROIs
  */
 ROI_buffer getRegionsOfInterest(cv::Mat& m);
