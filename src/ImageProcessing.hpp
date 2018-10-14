@@ -20,7 +20,9 @@
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
 
-
+/**
+ * @brief Namespace with image processing functions
+ */
 namespace ImageProcessing
 {
     /**
@@ -45,7 +47,7 @@ namespace ImageProcessing
 	 * @param [in] pos position in background to image be copied
 	 * @param [in] mid middle of background
 	 */
-	void resize(cv::Mat& m, int pos, int mid);
+	void resize(cv::Mat& m, int pos, int mid, int r);
 
     /**
 	 * @brief Copy image to specified location in background

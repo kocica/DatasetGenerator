@@ -10,6 +10,9 @@
 
 #include "ImageProcessing.hpp"
 
+/**
+ * @brief Namespace with image processing functions
+ */
 namespace ImageProcessing
 {
     void rotateImage(const cv::Mat &input, cv::Mat &output, double alpha, double beta, double gamma, double dx, double dy, double dz, double f)
@@ -109,11 +112,11 @@ namespace ImageProcessing
         ouImage.copyTo(bg(cv::Rect(x, y, sizex, sizey)));
     }
 
-    void resize(cv::Mat& m, int pos, int mid)
+    void resize(cv::Mat& m, int pos, int mid, int r)
     {
-        double ratio = 0;
+        double ratio = r / 10.;
 
-        if (pos > mid)
+        /*if (pos > mid)
         {
             ratio = (pos - mid) / (double) mid;
         }
@@ -121,7 +124,7 @@ namespace ImageProcessing
         {
             ratio  = 1 - (pos / (double) mid);
             ratio *= 0.5;
-        }
+        }*/
 
         cv::resize(m, m, cv::Size{(int) (ratio * m.rows), (int) (ratio * m.cols)});
     }

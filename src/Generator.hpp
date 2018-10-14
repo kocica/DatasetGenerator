@@ -68,6 +68,10 @@ private:
 
 	/** @brief 2   Random distribution */
 	std::uniform_int_distribution<std::mt19937::result_type> dist2;
+	/** @brief 10 Random distribution */
+	std::uniform_int_distribution<std::mt19937::result_type> dist10;
+	/** @brief 15 Random distribution */
+	std::uniform_int_distribution<std::mt19937::result_type> dist15;
 	/** @brief 20 Random distribution */
 	std::uniform_int_distribution<std::mt19937::result_type> dist20;
 	/** @brief 30  Random distribution */

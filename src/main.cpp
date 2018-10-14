@@ -49,7 +49,7 @@ int main(int argc, char **argv)
 	size_t i = 0;
 	for (imgCounter = 0; imgCounter < numberOfImages; imgCounter++)
 	{
-		bg  = bgs.at(imgCounter);
+		bg = bgs.at(imgCounter);
 
 		// Resize images
 		cv::resize(bg, bg, size);
@@ -61,8 +61,6 @@ int main(int argc, char **argv)
 		DtstGenerator gen(annotFile, imgClass);
 		gen.generate(roiBuffer, bg, imgs.at(i));
 
-		// Show image
-		//cv::imshow("bbox", bg);
 		// Save img
 		//cv::resize(bg, bg, cv::Size{416, 416});
 		imwrite(Utils::out + std::to_string(imgCounter) + Utils::imageExt, bg);
@@ -71,7 +69,7 @@ int main(int argc, char **argv)
 	}
 
 	// Free resources
-	//cv::waitKey(0);
 	cv::destroyAllWindows();
+
 	return 0;
 }
