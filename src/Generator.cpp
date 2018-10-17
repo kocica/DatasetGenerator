@@ -74,14 +74,14 @@ void DtstGenerator::generate(std::vector<std::pair<cv::Point, cv::Point>>& b, cv
 
 
 	// Select random bounding box
-	std::uniform_int_distribution<std::mt19937::result_type> distN(0, b.size() - 1);
-	int noBbox = distN(m_rng);
-	auto bbox  = b.at(noBbox);
+	//std::uniform_int_distribution<std::mt19937::result_type> distN(0, b.size() - 1);
+	//int noBbox = distN(m_rng);
+	//auto bbox  = b.at(noBbox);
 
-	int max_x = std::max(bbox.first.x, bbox.second.x);
-	int min_x = std::min(bbox.first.x, bbox.second.x);
-	int max_y = std::max(bbox.first.y, bbox.second.y);
-	int min_y = std::min(bbox.first.y, bbox.second.y);
+	int max_x = m.cols; // std::max(bbox.first.x, bbox.second.x);
+	int min_x = 0;      // std::min(bbox.first.x, bbox.second.x);
+	int max_y = m.rows; // std::max(bbox.first.y, bbox.second.y);
+	int min_y = 0;      // std::min(bbox.first.y, bbox.second.y);
 
 
 

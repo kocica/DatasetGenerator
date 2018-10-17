@@ -40,7 +40,7 @@ int main(int argc, char **argv)
 
 	// Regions of interest selection
 	ROI_buffer roiBuffer;
-	roiBuffer = getRegionsOfInterest(exampleBg);
+	//roiBuffer = getRegionsOfInterest(exampleBg);
 
 	int numberOfImages = bgs.size();
 	cv::Mat bg;
