@@ -88,7 +88,7 @@ namespace ImageProcessing
 
         if (b)
         {
-            //v *= 2;
+            v *= 1.25;
             subtract(img, v, img);
         }
         else
@@ -110,6 +110,21 @@ namespace ImageProcessing
         add(img, subImg, ouImage);
 
         ouImage.copyTo(bg(cv::Rect(x, y, sizex, sizey)));
+    }
+
+    void copy2bgCropped(cv::Mat& bg, cv::Mat& img, int& x, int& y, int& b, int& v)
+    {
+        /*if (b)
+        {
+            v *= 1.25;
+            subtract(img, v, img);
+        }
+        else
+        {
+            add(img, v, img);
+        }*/
+
+        img.copyTo(bg(cv::Rect(x, y, img.cols, img.rows)));
     }
 
     void resize(cv::Mat& m, int pos, int mid, int r)

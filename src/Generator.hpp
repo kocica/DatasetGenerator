@@ -46,6 +46,15 @@ public:
 	 */
 	void generate(std::vector<std::pair<cv::Point, cv::Point>>& b, cv::Mat m, cv::Mat m2);
 
+	/**
+	 * @brief Generating of images & annotation
+	 *
+	 * @param b [in] buffer of ROIs
+	 * @param m [in] background
+	 * @param m2 [in] image to be copied to background
+	 */
+	void generateCropped(std::vector<std::pair<cv::Point, cv::Point>>& b, cv::Mat m, cv::Mat m2);
+
 protected:
 	/**
 	 * @brief Create annotation file with same name as result image
