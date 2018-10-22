@@ -1,0 +1,4 @@
+no entry (other) 0.42 76 67 141 138
+stop (other) 0.4 81 46 148 122
+priority road (other) 0.29 234 85 289 144
+priority road (other) 0.31 330 282 352 314

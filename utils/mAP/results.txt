@@ -1,0 +1,37 @@
+Total BFLOPS 5.380 
+
+ seen 64 
+Enter Image Path: /home/filip/Desktop/STOPKY//039.jpg: Predicted in 28.865000 milli-seconds.
+stop (other): 56%	(left_x:    0   top_y:   80   width:   30   height:   30)
+Enter Image Path: /home/filip/Desktop/STOPKY//snow-covered-traffic-stop-sign-in-residential-area-in-toronto-during-B3CYRK.jpg: Predicted in 27.523000 milli-seconds.
+Enter Image Path: /home/filip/Desktop/STOPKY//aland.jpg: Predicted in 27.471000 milli-seconds.
+give way (other): 47%	(left_x:  951   top_y:  293   width:   30   height:   67)
+Enter Image Path: /home/filip/Desktop/STOPKY//cady-stop-signs-800px.jpg: Predicted in 29.673000 milli-seconds.
+speed limit 50 (prohibitory): 65%	(left_x:  399   top_y:  216   width:   15   height:   23)
+Enter Image Path: /home/filip/Desktop/STOPKY//StopSign.jpg: Predicted in 27.701000 milli-seconds.
+Enter Image Path: /home/filip/Desktop/STOPKY//5-Bayside-Int-1.jpg: Predicted in 27.443000 milli-seconds.
+Enter Image Path: /home/filip/Desktop/STOPKY//maxresdefault.jpg: Predicted in 27.468000 milli-seconds.
+no trucks (prohibitory): 30%	(left_x:  870   top_y:   84   width:  107   height:  134)
+keep right (mandatory): 43%	(left_x: 1131   top_y:  582   width:   51   height:   42)
+Enter Image Path: /home/filip/Desktop/STOPKY//test.jpg: Predicted in 27.375000 milli-seconds.
+Enter Image Path: /home/filip/Desktop/STOPKY//27580522-stop-sign-and-prohibited-turn-sign-with-snow-in-street-in-winter-with-pines-behind-it-covered-in-sno.jpg: Predicted in 27.629000 milli-seconds.
+Enter Image Path: /home/filip/Desktop/STOPKY//53bccfe7e7bdb.image2.jpg: Predicted in 27.426000 milli-seconds.
+Enter Image Path: /home/filip/Desktop/STOPKY//3.jpg: Predicted in 27.384000 milli-seconds.
+no entry (other): 79%	(left_x:  298   top_y:  562   width:   51   height:   49)
+Enter Image Path: /home/filip/Desktop/STOPKY//EP-150409826.jpg: Predicted in 27.355000 milli-seconds.
+Enter Image Path: /home/filip/Desktop/STOPKY//hko-sask-bus-crash-20180413.jpg: Predicted in 27.578000 milli-seconds.
+speed limit 80 (prohibitory): 40%	(left_x:  356   top_y:   16   width:   70   height:   71)
+stop (other): 38%
+Enter Image Path: /home/filip/Desktop/STOPKY//parkinglot1-09052013.jpg: Predicted in 27.656000 milli-seconds.
+no entry (other): 41%	(left_x:  148   top_y:   85   width:   62   height:   83)
+Enter Image Path: /home/filip/Desktop/STOPKY//41_15_10_web.jpg: Predicted in 29.665000 milli-seconds.
+no entry (other): 42%	(left_x:   76   top_y:   67   width:   65   height:   71)
+stop (other): 40%	(left_x:   81   top_y:   46   width:   67   height:   76)
+priority road (other): 29%	(left_x:  234   top_y:   85   width:   55   height:   59)
+priority road (other): 31%	(left_x:  330   top_y:  282   width:   22   height:   32)
+Enter Image Path: /home/filip/Desktop/STOPKY//53bccfe7e7bdb.image.jpg: Predicted in 27.492000 milli-seconds.
+stop (other): 88%	(left_x:  322   top_y:  190   width:   70   height:   57)
+Enter Image Path: /home/filip/Desktop/STOPKY//covered-stop-sign-wikipedia-albert-bridge.jpg: Predicted in 27.677000 milli-seconds.
+Enter Image Path: /home/filip/Desktop/STOPKY//172829957.jpg: Predicted in 27.474000 milli-seconds.
+speed limit 50 (prohibitory): 28%	(left_x: 1302   top_y:  506   width:  127   height:  137)
+Enter Image Path: 
