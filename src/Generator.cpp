@@ -206,9 +206,9 @@ void DtstGenerator::generateCropped(std::vector<std::pair<cv::Point, cv::Point>>
 		cols;
 
 	// Check whether image is not bigger than background
-	if (m2.rows > m.rows || m2.cols > m.cols)
+	while (m2.rows > m.rows || m2.cols > m.cols)
 	{
-		return;
+		cv::resize(m2, m2, cv::Size{m2.cols / 2, m2.rows / 2});
 	}
 
 
@@ -314,10 +314,10 @@ void DtstGenerator::generateCropped(std::vector<std::pair<cv::Point, cv::Point>>
 
 	// Save data to annotation file
 	cv::Rect roi;
-	roi.x      = (m2.cols - cols) / 2;
-	roi.y      = (m2.rows - rows) / 2;
-	roi.height = rows;
-	roi.width  = cols;
+	roi.x      = 5;
+	roi.y      = 5;
+	roi.height = rows - 10;
+	roi.width  = cols - 10;
 
 	m2    = m2(roi);
 
@@ -372,5 +372,5 @@ void DtstGenerator::createAnnotation(cv::Mat& m, cv::Mat& m2, int& x, int& y)
 	cv::Point pt {x2, y2};
 	cv::Point pt2{x2 + size_x, y2 + size_y};
 
-	cv::rectangle(m, pt, pt2, cv::Scalar{0, 255, 0});*/
+	cv::rectangle(m, pt, pt2, cv::Scalar{0, 255, 0}, 2);*/
 }

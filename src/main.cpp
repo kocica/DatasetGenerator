@@ -87,7 +87,7 @@ int main(int argc, char **argv)
 		// Save img
 		if (distB(rng) < 2)
 		{
-			cv::blur(bg, bg, cv::Size{3, 3});
+			//cv::blur(bg, bg, cv::Size{3, 3});
 		}
 
 		//cv::resize(bg, bg, size);
