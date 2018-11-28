@@ -1,1 +1,0 @@
-speed limit 80 (prohibitory) 0.4 356 16 426 87

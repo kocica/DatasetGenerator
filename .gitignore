@@ -10,6 +10,9 @@ out/*
 # vscode
 .vscode/*
 
+# Generated data
+dataset/*
+
 
 
 

@@ -1,1 +1,0 @@
-speed limit 50 (prohibitory) 0.65 399 216 414 239

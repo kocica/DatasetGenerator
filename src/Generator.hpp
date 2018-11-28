@@ -44,7 +44,7 @@ public:
 	 * @param m [in] background
 	 * @param m2 [in] image to be copied to background
 	 */
-	void generate(std::vector<std::pair<cv::Point, cv::Point>>& b, cv::Mat m, cv::Mat m2);
+	bool generate(std::vector<std::pair<cv::Point, cv::Point>>& b, cv::Mat m, cv::Mat m2);
 
 	/**
 	 * @brief Generating of images & annotation
@@ -85,6 +85,8 @@ private:
 	std::uniform_int_distribution<std::mt19937::result_type> dist20;
 	/** @brief 30  Random distribution */
 	std::uniform_int_distribution<std::mt19937::result_type> dist30;
+	/** @brief 50 Random distribution */
+	std::uniform_int_distribution<std::mt19937::result_type> dist50;
 	/** @brief 100 Random distribution */
 	std::uniform_int_distribution<std::mt19937::result_type> dist100;
 };

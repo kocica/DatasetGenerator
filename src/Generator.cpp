@@ -22,7 +22,8 @@ DtstGenerator::DtstGenerator(std::ofstream& out, int imgClass)
 	dist15  = std::uniform_int_distribution<std::mt19937::result_type> (0, 15);
 	dist20  = std::uniform_int_distribution<std::mt19937::result_type> (0, 20);
 	dist30  = std::uniform_int_distribution<std::mt19937::result_type> (0, 30);
-	dist100 = std::uniform_int_distribution<std::mt19937::result_type> (0, 50);
+	dist50  = std::uniform_int_distribution<std::mt19937::result_type> (0, 50);
+	dist100 = std::uniform_int_distribution<std::mt19937::result_type> (20, 100);
 }
 
 DtstGenerator::~DtstGenerator()
@@ -30,7 +31,7 @@ DtstGenerator::~DtstGenerator()
 
 }
 
-void DtstGenerator::generate(std::vector<std::pair<cv::Point, cv::Point>>& b, cv::Mat m, cv::Mat m2)
+bool DtstGenerator::generate(std::vector<std::pair<cv::Point, cv::Point>>& b, cv::Mat m, cv::Mat m2)
 {
 	// RNG values
 	int rng_dir,            // Should the image be rotated to "left" or "right"
@@ -38,6 +39,8 @@ void DtstGenerator::generate(std::vector<std::pair<cv::Point, cv::Point>>& b, cv
 		rng_val,            // Pseudo-random generated value
 		rows,
 		cols;
+
+	bool blur;
 
 
 	// Blur image with random kernel size
@@ -47,7 +50,7 @@ void DtstGenerator::generate(std::vector<std::pair<cv::Point, cv::Point>>& b, cv
 
 	if (rng_rot < 3)
 	{
-		cv::blur(m2, m2, cv::Size(rng_val, rng_val));
+		//cv::blur(m2, m2, cv::Size(rng_val, rng_val));
 	}
 
 
@@ -95,9 +98,11 @@ void DtstGenerator::generate(std::vector<std::pair<cv::Point, cv::Point>>& b, cv
 
 
 	// Resize image due to its position in background
-	rng_val = dist10(m_rng);
+	rng_val = dist100(m_rng);
 	ImageProcessing::resize(m2,     x, m.cols/2, rng_val);
 	ImageProcessing::resize(alpha,  x, m.cols/2, rng_val);
+	
+	blur = rng_val < 30 ? false : true;
 
 
 
@@ -190,10 +195,12 @@ void DtstGenerator::generate(std::vector<std::pair<cv::Point, cv::Point>>& b, cv
 
 	// Increase/decrease luminescence and copy img to background
 	rng_rot = dist2  (m_rng);
-	rng_val = dist100(m_rng);     // Value [0; 100]
+	rng_val = dist50(m_rng);     // Value [0; 100]
 	
 
 	ImageProcessing::copy2bg(m, m2, alpha, x, y, rng_rot, rng_val);
+
+	return blur;
 }
 
 void DtstGenerator::generateCropped(std::vector<std::pair<cv::Point, cv::Point>>& b, cv::Mat m, cv::Mat m2)
@@ -345,7 +352,7 @@ void DtstGenerator::generateCropped(std::vector<std::pair<cv::Point, cv::Point>>
 
 	// Increase/decrease luminescence and copy img to background
 	rng_rot = dist2  (m_rng);
-	rng_val = dist100(m_rng);     // Value [0; 100]
+	rng_val = dist50(m_rng);     // Value [0; 100]
 	
 
 	ImageProcessing::copy2bgCropped(m, m2, x, y, rng_rot, rng_val);

@@ -129,7 +129,7 @@ namespace ImageProcessing
 
     void resize(cv::Mat& m, int pos, int mid, int r)
     {
-        double ratio = r / 10.;
+        double ratio = r / 100.;
 
         /*if (pos > mid)
         {

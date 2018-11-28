@@ -19,8 +19,8 @@
 int main(int argc, char **argv)
 {
 	// Locals
-	int               imgClass = 0, imgCounter = 0, ret;
-	std::string       pathToBackgrounds, pathToImages, backgroundName, imageName, csvName;
+	int               imgClass = 2992, imgCounter = 0, ret;
+	std::string       pathToBackgrounds, pathToImages, backgroundName, imageName, csvName, classID = "stop";
 	Utils::ImgBuffer  bgs, imgs;
 	cv::Size          size;
 
@@ -32,7 +32,7 @@ int main(int argc, char **argv)
 
 	// Load iamges
 	Utils::loadImages(pathToBackgrounds, bgs,  cv::IMREAD_COLOR);
-	Utils::loadImages(pathToImages,      imgs, cv::IMREAD_COLOR); // cv::IMREAD_UNCHANGED
+	Utils::loadImages(pathToImages,      imgs, cv::IMREAD_UNCHANGED);
 
 	// Load example background
 	//cv::Mat exampleBg = cv::imread("data/roi-selection.png");
@@ -58,12 +58,14 @@ int main(int argc, char **argv)
 	distY = std::uniform_int_distribution<std::mt19937::result_type> (0, bgs.at(0).rows - 300);
 	distW = std::uniform_int_distribution<std::mt19937::result_type> (225, 300);
 	distH = std::uniform_int_distribution<std::mt19937::result_type> (150, 200);
-	distB = std::uniform_int_distribution<std::mt19937::result_type> (0, 10);
+	distB = std::uniform_int_distribution<std::mt19937::result_type> (0, 20);
 	distI = std::uniform_int_distribution<std::mt19937::result_type> (0, imgs.size() - 1);
 
 	// For each image
 	size_t i = 0;
-	for (imgCounter = 0; imgCounter < 280; imgCounter++)
+	bool blur = false;
+
+	for (imgCounter = 0; imgCounter < 1000; imgCounter++)
 	{
 		bgs.at(imgCounter % numberOfImages).copyTo(bg);
 
@@ -77,21 +79,21 @@ int main(int argc, char **argv)
 		bg = bg(roi);
 
 		// Output annotation file
-		std::ofstream annotFile(Utils::out + std::to_string(imgCounter) + Utils::annotExt);
+		std::ofstream annotFile(Utils::out + classID + std::to_string(imgCounter) + Utils::annotExt);
 
 		// Image & annotation generator
 		DtstGenerator gen(annotFile, imgClass);
 
-		gen.generateCropped(roiBuffer, bg, imgs.at(distI(rng)));
+		blur = gen.generate(roiBuffer, bg, imgs.at(i /*distI(rng)*/));
 
-		// Save img
-		if (distB(rng) < 2)
+		// Blur image with kernel of size (3;3) with probability ~5%
+		if ((distB(rng) < 2) && blur)
 		{
-			//cv::blur(bg, bg, cv::Size{3, 3});
+			cv::blur(bg, bg, cv::Size{3, 3});
 		}
 
 		//cv::resize(bg, bg, size);
-		imwrite(Utils::out + std::to_string(imgCounter) + Utils::imageExt, bg);
+		imwrite(Utils::out + classID + std::to_string(imgCounter) + Utils::imageExt, bg);
 
 		i = (i == (imgs.size() - 1)) ? 0 : i+1;
 	}

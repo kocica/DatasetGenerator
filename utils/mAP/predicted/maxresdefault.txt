@@ -1,2 +1,0 @@
-no trucks (prohibitory) 0.3 870 84 977 218
-keep right (mandatory) 0.43 1131 582 1182 624
