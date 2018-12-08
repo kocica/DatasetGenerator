@@ -176,7 +176,7 @@ def adjust_axes(r, t, fig, axes):
 """
  Draw plot using Matplotlib
 """
-def draw_plot_func(dictionary, n_classes, window_title, plot_title, x_label, output_path, to_show, plot_color, true_p_bar):
+def draw_plot_func(dictionary, n_classes, window_title, plot_title, x_label, output_path, to_show, plot_color, true_p_bar, missing_bar):
   # sort the dictionary by decreasing value, into a list of tuples
   sorted_dic_by_value = sorted(dictionary.items(), key=operator.itemgetter(1))
   # unpacking the list of tuples into two lists
@@ -188,13 +188,20 @@ def draw_plot_func(dictionary, n_classes, window_title, plot_title, x_label, out
     """
     fp_sorted = []
     tp_sorted = []
+    missing   = []
+    space     = []
     for key in sorted_keys:
       fp_sorted.append(dictionary[key] - true_p_bar[key])
       tp_sorted.append(true_p_bar[key])
+      missing.append(missing_bar[key] - true_p_bar[key])
+      space.append(dictionary[key] - true_p_bar[key] + true_p_bar[key])
+
     plt.barh(range(n_classes), fp_sorted, align='center', color='crimson', label='False Predictions')
     plt.barh(range(n_classes), tp_sorted, align='center', color='forestgreen', label='True Predictions', left=fp_sorted)
+    plt.barh(range(n_classes), missing,   align='center', color='black', label='Not detected', left=space)
+
     # add legend
-    plt.legend(loc='lower right')
+    plt.legend(loc='lower left')
     """
      Write number on side of bar
     """
@@ -204,12 +211,15 @@ def draw_plot_func(dictionary, n_classes, window_title, plot_title, x_label, out
     for i, val in enumerate(sorted_values):
       fp_val = fp_sorted[i]
       tp_val = tp_sorted[i]
+      m_val = missing[i]
       fp_str_val = " " + str(fp_val)
       tp_str_val = fp_str_val + " " + str(tp_val)
+      m_str_val = tp_str_val + " " + str(m_val)
       # trick to paint multicolor with offset:
       #   first paint everything and then repaint the first number
-      t = plt.text(val, i, tp_str_val, color='forestgreen', va='center', fontweight='bold')
-      plt.text(val, i, fp_str_val, color='crimson', va='center', fontweight='bold')
+      t = plt.text(val + m_val, i, m_str_val, color='black', va='center', fontweight='bold')
+      plt.text(val + m_val, i, tp_str_val, color='forestgreen', va='center', fontweight='bold')
+      plt.text(val + m_val, i, fp_str_val, color='crimson', va='center', fontweight='bold')
       if i == (len(sorted_values)-1): # largest bar
         adjust_axes(r, t, fig, axes)
   else:
@@ -690,6 +700,7 @@ if draw_plot:
     to_show,
     plot_color,
     '',
+    ''
     )
 
 """
@@ -734,7 +745,8 @@ if draw_plot:
     output_path,
     to_show,
     plot_color,
-    true_p_bar
+    true_p_bar,
+    gt_counter_per_class
     )
 
 """
@@ -768,5 +780,6 @@ if draw_plot:
     output_path,
     to_show,
     plot_color,
-    ""
+    '',
+    ''
     )

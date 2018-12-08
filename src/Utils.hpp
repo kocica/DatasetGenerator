@@ -37,7 +37,12 @@ namespace Utils
     const std::string out        = "out/";
     const std::string imgClassFn  = "imgClass";
 
-
+    /**
+     * @brief Read first number from annotation text file ie. number of the class
+     *
+     * @param [in] path Where are class directory & annotation file located
+     * @return Class number
+     */
     auto getImgClass = [](const std::string& path) -> int
     {
         std::fstream fs { path + "/" + imgClassFn, std::ios_base::in };

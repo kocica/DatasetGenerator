@@ -110,7 +110,7 @@ int main(int argc, char **argv)
 #		ifdef IMG_CROPPED
 			Utils::loadImages(path, imgs, cv::IMREAD_UNCHANGED);  // With alpha-channel
 #		else
-			Utils::loadImages(path, imgs, cv::IMREAD_COLOR);
+			Utils::loadImages(path, imgs, cv::IMREAD_COLOR);      // Classification dataset TS
 #		endif
 
 		int nBackgrounds = bgs.size();
