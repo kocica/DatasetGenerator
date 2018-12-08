@@ -23,7 +23,12 @@ DtstGenerator::DtstGenerator(std::ofstream& out, int imgClass)
 	dist20  = std::uniform_int_distribution<std::mt19937::result_type> (0, 20);
 	dist30  = std::uniform_int_distribution<std::mt19937::result_type> (0, 30);
 	dist50  = std::uniform_int_distribution<std::mt19937::result_type> (0, 50);
+
+#ifdef IMG_CROPPED
+	dist100 = std::uniform_int_distribution<std::mt19937::result_type> (30, 100);
+#else
 	dist100 = std::uniform_int_distribution<std::mt19937::result_type> (20, 60);
+#endif
 }
 
 DtstGenerator::~DtstGenerator()
@@ -31,29 +36,25 @@ DtstGenerator::~DtstGenerator()
 
 }
 
-bool DtstGenerator::generate(std::vector<std::pair<cv::Point, cv::Point>>& b, cv::Mat m, cv::Mat m2)
+void DtstGenerator::generate(std::vector<std::pair<cv::Point, cv::Point>>& b, cv::Mat m, cv::Mat m2)
 {
-	dist100 = std::uniform_int_distribution<std::mt19937::result_type> (20, 100);
-
 	// RNG values
 	int rng_dir,            // Should the image be rotated to "left" or "right"
-	    rng_rot,            // Should image be rotated / blured
-		rng_val,            // Pseudo-random generated value
-		rows,
-		cols;
-
-	bool blur;
+	    rng_rot,            // Should image be rotated / blured / ...
+		rng_val;            // Pseudo-random generated value
 
 
 	// Blur image with random kernel size
+#ifdef BLUR
 	rng_rot = dist20(m_rng);
 	rng_val = dist20(m_rng);
-	rng_val = (rng_val % 2) == 0 ? rng_val + 1: rng_val;
+	rng_val = (rng_val % 2) == 0 ? rng_val + 1: rng_val; // Generate even number (eg. 3, 5, 7, ...)
 
 	if (rng_rot < 3)
 	{
-		//cv::blur(m2, m2, cv::Size(rng_val, rng_val));
+		cv::blur(m2, m2, cv::Size(rng_val, rng_val));
 	}
+#endif
 
 
 
@@ -63,31 +64,32 @@ bool DtstGenerator::generate(std::vector<std::pair<cv::Point, cv::Point>>& b, cv
 	cv::Mat alpha;
 	channels[3].copyTo(alpha);
 
-
-
 	// Convert transparent image to BGR (3 channel) img
 	cv::cvtColor(m2, m2, cv::COLOR_BGRA2BGR);
 
 
-
-	// Resize inserted image to 100x100
-	rows = 50;
-	cols = 50;
-	cv::resize(m2,    m2,    cv::Size(cols, rows));
-	cv::resize(alpha, alpha, cv::Size(cols, rows));
+	// Resize inserted image to 50x50
+	cv::resize(m2,    m2,    cv::Size(50, 50));
+	cv::resize(alpha, alpha, cv::Size(50, 50));
 
 
 
 	// Select random bounding box
-	//std::uniform_int_distribution<std::mt19937::result_type> distN(0, b.size() - 1);
-	//int noBbox = distN(m_rng);
-	//auto bbox  = b.at(noBbox);
+#ifdef ROI_SELECTION
+	std::uniform_int_distribution<std::mt19937::result_type> distN(0, b.size() - 1);
+	int noBbox = distN(m_rng);
+	auto bbox  = b.at(noBbox);
 
-	int max_x = m.cols; // std::max(bbox.first.x, bbox.second.x);
-	int min_x = 0;      // std::min(bbox.first.x, bbox.second.x);
-	int max_y = m.rows; // std::max(bbox.first.y, bbox.second.y);
-	int min_y = 0;      // std::min(bbox.first.y, bbox.second.y);
-
+	int max_x = std::max(bbox.first.x, bbox.second.x);
+	int min_x = std::min(bbox.first.x, bbox.second.x);
+	int max_y = std::max(bbox.first.y, bbox.second.y);
+	int min_y = std::min(bbox.first.y, bbox.second.y);
+#else
+	int max_x = m.cols;
+	int min_x = 0;
+	int max_y = m.rows;
+	int min_y = 0;
+#endif
 
 
 	// Generate random position in bounding box
@@ -104,32 +106,26 @@ bool DtstGenerator::generate(std::vector<std::pair<cv::Point, cv::Point>>& b, cv
 	ImageProcessing::resize(m2,     x, m.cols/2, rng_val);
 	ImageProcessing::resize(alpha,  x, m.cols/2, rng_val);
 	
-	blur = rng_val < 30 ? false : true;
 
-
-
-
-	rows = m2.rows;
-	cols = m2.cols;
-
-	/*
 	// Rotate image left/right
+#ifdef ROTATE_XY
 	rng_dir = dist2 (m_rng);
 	rng_rot = dist20(m_rng);
-	rng_val = dist15(m_rng);     // Value [0; 15]
+	rng_val = dist15(m_rng);
 
 	if (rng_rot < 6)
 	{
 		ImageProcessing::rotateAngle(m2,    rng_dir == 0 ? rng_val : -rng_val);
 		ImageProcessing::rotateAngle(alpha, rng_dir == 0 ? rng_val : -rng_val);
 	}
-
+#endif
 
 
 	// Rotate image Z
+#ifdef ROTATE_Z
 	rng_dir = dist2(m_rng);
 	rng_rot = dist20(m_rng);
-	rng_val = dist15 (m_rng);     // Value [0; 20]
+	rng_val = dist15(m_rng);
 
 	if (rng_rot < 6)
 	{
@@ -139,8 +135,7 @@ bool DtstGenerator::generate(std::vector<std::pair<cv::Point, cv::Point>>& b, cv
 		ImageProcessing::rotateImage(m2,    m2,    90, rng_val, 90, 0, 0, 200, 200);
 		ImageProcessing::rotateImage(alpha, alpha, 90, rng_val, 90, 0, 0, 200, 200);
 	}
-	*/
-
+#endif
 
 
 	// Copy image to background
@@ -164,20 +159,11 @@ bool DtstGenerator::generate(std::vector<std::pair<cv::Point, cv::Point>>& b, cv
 
 
 
-	// Save data to annotation file
-	cv::Rect roi;
-	roi.x      = (m2.cols - cols) / 2;
-	roi.y      = (m2.rows - rows) / 2;
-	roi.height = rows;
-	roi.width  = cols;
-
-	m2    = m2(roi);
-	alpha = alpha(roi);
-
+	// Create annotation
 	createAnnotation(m, m2, x, y);
 
 
-	// Multiply, divide
+	// Luminescence
 	rng_dir = dist20(m_rng);
 	rng_rot = dist20(m_rng);
 
@@ -196,17 +182,11 @@ bool DtstGenerator::generate(std::vector<std::pair<cv::Point, cv::Point>>& b, cv
 	}
 
 
-	// Increase/decrease luminescence and copy img to background
-	rng_rot = dist2  (m_rng);
-	rng_val = dist50(m_rng);     // Value [0; 100]
-	
+	ImageProcessing::copy2bg(m, m2, alpha, x, y);
 
-	ImageProcessing::copy2bg(m, m2, alpha, x, y, rng_rot, rng_val);
-
-	// DEBUG: Show bboxes
-	//showBbox(m, m2, x, y);
-
-	return blur;
+#ifdef GENERATOR_DEBUG
+	showBbox(m, m2, x, y);
+#endif
 }
 
 void DtstGenerator::generateCropped(std::vector<std::pair<cv::Point, cv::Point>>& b, cv::Mat m, cv::Mat m2)
@@ -214,9 +194,7 @@ void DtstGenerator::generateCropped(std::vector<std::pair<cv::Point, cv::Point>>
 	// RNG values
 	int rng_dir,            // Should the image be rotated to "left" or "right"
 	    rng_rot,            // Should image be rotated / blured
-		rng_val,            // Pseudo-random generated value
-		rows,
-		cols;
+		rng_val;            // Pseudo-random generated value
 
 	// Check whether image is not bigger than background
 	while (m2.rows > m.rows || m2.cols > m.cols)
@@ -225,34 +203,22 @@ void DtstGenerator::generateCropped(std::vector<std::pair<cv::Point, cv::Point>>
 	}
 
 
-	// Blur image with random kernel size
-	/*rng_rot = dist20(m_rng);
-	rng_val = dist20(m_rng);
-	rng_val = (rng_val % 2) == 0 ? rng_val + 1: rng_val;
-
-	if (rng_rot < 3)
-	{
-		cv::blur(m2, m2, cv::Size(rng_val, rng_val));
-	}*/
-
-
-
-	// Resize inserted image to 100x100
-	//rows = 100;
-	//cols = 100;
-	//cv::resize(m2,    m2,    cv::Size(cols, rows));
-
-
-
 	// Select random bounding box
-	//std::uniform_int_distribution<std::mt19937::result_type> distN(0, b.size() - 1);
-	//int noBbox = distN(m_rng);
-	//auto bbox  = b.at(noBbox);
+#ifdef ROI_SELECTION
+	std::uniform_int_distribution<std::mt19937::result_type> distN(0, b.size() - 1);
+	int noBbox = distN(m_rng);
+	auto bbox  = b.at(noBbox);
 
-	int max_x = m.cols - 1; // std::max(bbox.first.x, bbox.second.x);
-	int min_x = 0;          // std::min(bbox.first.x, bbox.second.x);
-	int max_y = m.rows - 1; // std::max(bbox.first.y, bbox.second.y);
-	int min_y = 0;          // std::min(bbox.first.y, bbox.second.y);
+	int max_x = std::max(bbox.first.x, bbox.second.x);
+	int min_x = std::min(bbox.first.x, bbox.second.x);
+	int max_y = std::max(bbox.first.y, bbox.second.y);
+	int min_y = std::min(bbox.first.y, bbox.second.y);
+#else
+	int max_x = m.cols;
+	int min_x = 0;
+	int max_y = m.rows;
+	int min_y = 0;
+#endif
 
 
 	// Generate random position in bounding box
@@ -263,35 +229,28 @@ void DtstGenerator::generateCropped(std::vector<std::pair<cv::Point, cv::Point>>
 	int y = distN3(m_rng);
 
 
-
-	// Resize image due to its position in background
-	//rng_val = dist10(m_rng);
-	//ImageProcessing::resize(m2,     x, m.cols/2, rng_val);
 	rng_val = dist100(m_rng);
 	cv::resize(m2, m2, cv::Size{rng_val, rng_val});
 
 
-	rows = m2.rows;
-	cols = m2.cols;
-
-
 	// Rotate image left/right
-	/*rng_dir = dist2 (m_rng);
+#ifdef ROTATE_XY
+	rng_dir = dist2 (m_rng);
 	rng_rot = dist20(m_rng);
-	rng_val = dist15(m_rng);     // Value [0; 15]
+	rng_val = dist15(m_rng);
 
 	if (rng_rot < 6)
 	{
 		ImageProcessing::rotateAngle(m2,    rng_dir == 0 ? rng_val : -rng_val);
-		ImageProcessing::rotateAngle(alpha, rng_dir == 0 ? rng_val : -rng_val);
-	}*/
-
+	}
+#endif
 
 
 	// Rotate image Z
-	/*rng_dir = dist2(m_rng);
+#ifdef ROTATE_Z
+	rng_dir = dist2(m_rng);
 	rng_rot = dist20(m_rng);
-	rng_val = dist20 (m_rng);     // Value [0; 20]
+	rng_val = dist15(m_rng);
 
 	if (rng_rot < 6)
 	{
@@ -299,9 +258,8 @@ void DtstGenerator::generateCropped(std::vector<std::pair<cv::Point, cv::Point>>
 		rng_val = 90 + rng_val;
 
 		ImageProcessing::rotateImage(m2,    m2,    90, rng_val, 90, 0, 0, 200, 200);
-		ImageProcessing::rotateImage(alpha, alpha, 90, rng_val, 90, 0, 0, 200, 200);
-	}*/
-
+	}
+#endif
 
 
 	// Copy image to background
@@ -325,7 +283,7 @@ void DtstGenerator::generateCropped(std::vector<std::pair<cv::Point, cv::Point>>
 
 
 
-	// Save data to annotation file
+	// Create annotation
 	cv::Rect roi;
 	roi.x      = m2.rows / 10;
 	roi.y      = m2.cols / 10;
@@ -340,33 +298,11 @@ void DtstGenerator::generateCropped(std::vector<std::pair<cv::Point, cv::Point>>
 	createAnnotation(m, tmp, x2, y2);
 
 
-	// Multiply, divide
-	/*rng_dir = dist20(m_rng);
-	rng_rot = dist20(m_rng);
+	ImageProcessing::copy2bgCropped(m, m2, x, y);
 
-	if (rng_dir < 6)
-	{
-		if (rng_rot > 6)
-		{
-			m2.convertTo(m2, CV_32FC3);
-			cv::divide(m2, 1.5, m2);
-			m2.convertTo(m2, CV_8UC3);
-		}
-		else
-		{
-			cv::multiply(m2, 1.1, m2);
-		}
-	}*/
-
-
-	// Increase/decrease luminescence and copy img to background
-	rng_rot = dist2  (m_rng);
-	rng_val = dist50(m_rng);     // Value [0; 100]
-	
-
-	ImageProcessing::copy2bgCropped(m, m2, x, y, rng_rot, rng_val);
-
+#ifdef GENERATOR_DEBUG
 	showBbox(m, tmp, x2, y2);
+#endif
 }
 
 void DtstGenerator::createAnnotation(cv::Mat& m, cv::Mat& m2, int& x, int& y)

@@ -57,10 +57,8 @@ namespace ImageProcessing
 	 * @param [in] alpha Alpha channel of image copied to background
 	 * @param [in] x Position X
 	 * @param [in] y Position Y
-	 * @param [in] b Should be luminescence modified ? (RNG)
-	 * @param [in] v Luminescence (RNG)
 	 */
-	void copy2bg(cv::Mat& bg, cv::Mat& img, cv::Mat& alpha, int& x, int& y, int& b, int& v);
+	void copy2bg(cv::Mat& bg, cv::Mat& img, cv::Mat& alpha, const int& x, const int& y);
 
 	/**
 	 * @brief Copy cropped image to specified location in background
@@ -69,10 +67,8 @@ namespace ImageProcessing
 	 * @param [in] img Image copied to background
 	 * @param [in] x Position X
 	 * @param [in] y Position Y
-	 * @param [in] b Should be luminescence modified ? (RNG)
-	 * @param [in] v Luminescence (RNG)
 	 */
-	void copy2bgCropped(cv::Mat& bg, cv::Mat& img, int& x, int& y, int& b, int& v);
+	void copy2bgCropped(cv::Mat& bg, cv::Mat& img, const int& x, const int& y);
 
 	/**
 	 * @brief Rotate image in Y axis

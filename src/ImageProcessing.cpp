@@ -5,7 +5,7 @@
  *
  * Training dataset generator
  *
- * This file provides image processing operations, such as 3D transformations
+ * This file provides image processing operations, such as 3D transformations, resizing, etc.
  */
 
 #include "ImageProcessing.hpp"
@@ -74,7 +74,10 @@ namespace ImageProcessing
         cv::warpPerspective(input, output, trans, input.size(), cv::INTER_LANCZOS4);
     }
 
-    void copy2bg(cv::Mat& bg, cv::Mat& img, cv::Mat& alpha, int& x, int& y, int& b, int& v)
+
+
+
+    void copy2bg(cv::Mat& bg, cv::Mat& img, cv::Mat& alpha, const int& x, const int& y)
     {
         int sizex = img.cols;
         int sizey = img.rows;
@@ -86,16 +89,6 @@ namespace ImageProcessing
         cv::cvtColor(alpha, alpha, cv::COLOR_GRAY2BGR);
         alpha.convertTo(alpha, CV_32FC3, 1.0/255);
 
-        /*if (b)
-        {
-            v *= 1.25;
-            subtract(img, v, img);
-        }
-        else
-        {
-            add(img, v, img);
-        }*/
-
         multiply(alpha, img, img);
 
         cv::Mat ouImage = cv::Mat::zeros(img.size(), img.type());
@@ -104,7 +97,7 @@ namespace ImageProcessing
         multiply(alpha, img, img);
 
         // Multiply the background with ( 1 - alpha )
-        multiply(cv::Scalar::all(1.0)-alpha, subImg, subImg);
+        multiply(cv::Scalar::all(1.0) - alpha, subImg, subImg);
 
         // Add the masked foreground and background.
         add(img, subImg, ouImage);
@@ -112,26 +105,28 @@ namespace ImageProcessing
         ouImage.copyTo(bg(cv::Rect(x, y, sizex, sizey)));
     }
 
-    void copy2bgCropped(cv::Mat& bg, cv::Mat& img, int& x, int& y, int& b, int& v)
-    {
-        /*if (b)
-        {
-            v *= 1.25;
-            subtract(img, v, img);
-        }
-        else
-        {
-            add(img, v, img);
-        }*/
 
+
+
+
+    void copy2bgCropped(cv::Mat& bg, cv::Mat& img, const int& x, const int& y)
+    {
         img.copyTo(bg(cv::Rect(x, y, img.cols, img.rows)));
     }
+
+
+
+
 
     void resize(cv::Mat& m, int pos, int mid, int r)
     {
         double ratio = r / 100.;
 
-        /*if (pos > mid)
+        // Resize image due to its position in background
+        // ie. closer to the middle, smaller image will be
+
+#ifdef ROI_SELECTION
+        if (pos > mid)
         {
             ratio = (pos - mid) / (double) mid;
         }
@@ -139,10 +134,13 @@ namespace ImageProcessing
         {
             ratio  = 1 - (pos / (double) mid);
             ratio *= 0.5;
-        }*/
+        }
+#endif
 
         cv::resize(m, m, cv::Size{(int) (ratio * m.rows), (int) (ratio * m.cols)});
     }
+
+
 
 
     void rotateAngle(cv::Mat& img, double angle)
@@ -154,7 +152,7 @@ namespace ImageProcessing
         cv::Rect bounds    = cv::RotatedRect (center, img.size(), angle).boundingRect();
         cv::Mat resized    = cv::Mat::zeros (bounds.size(), img.type());
 
-        double offsetX = (bounds.width - width) / 2;
+        double offsetX = (bounds.width - width)   / 2;
         double offsetY = (bounds.height - height) / 2;
 
         cv::Rect roi = cv::Rect (offsetX, offsetY, width, height);

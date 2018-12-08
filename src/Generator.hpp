@@ -38,16 +38,16 @@ public:
 	virtual ~DtstGenerator();
 
 	/**
-	 * @brief Generating of images & annotation
+	 * @brief Generating of images & annotation (Image of traffic sign with alpha channel)
 	 *
 	 * @param b [in] buffer of ROIs
 	 * @param m [in] background
 	 * @param m2 [in] image to be copied to background
 	 */
-	bool generate(std::vector<std::pair<cv::Point, cv::Point>>& b, cv::Mat m, cv::Mat m2);
+	void generate(std::vector<std::pair<cv::Point, cv::Point>>& b, cv::Mat m, cv::Mat m2);
 
 	/**
-	 * @brief Generating of images & annotation
+	 * @brief Generating of images & annotation (Image of TS from classification dataset)
 	 *
 	 * @param b [in] buffer of ROIs
 	 * @param m [in] background
@@ -66,30 +66,35 @@ protected:
 	 */
 	void createAnnotation(cv::Mat& m, cv::Mat& m2, int& x, int& y);
 
-	// DEBUG
+	/**
+	 * === DEBUG ===
+	 * @brief Draws bbox (rectangle) around traffic sign according to annotation
+	 */
 	void showBbox(cv::Mat& m, cv::Mat& m2, int& x, int& y);
 
 private:
 	/** @brief Annotation output file */
 	std::ofstream& m_out;
+
 	/** @brief Image class number */
-	int m_class;
+	int            m_class;
+
 	/** @brief RNG */
-	std::mt19937 m_rng;
+	std::mt19937   m_rng;
 
 
-	/** @brief 2   Random distribution */
+	/** @brief 0-2   Pseudo-random uniform distribution */
 	std::uniform_int_distribution<std::mt19937::result_type> dist2;
-	/** @brief 10 Random distribution */
+	/** @brief 0-10  Pseudo-random uniform distribution */
 	std::uniform_int_distribution<std::mt19937::result_type> dist10;
-	/** @brief 15 Random distribution */
+	/** @brief 0-15  Pseudo-random uniform distribution */
 	std::uniform_int_distribution<std::mt19937::result_type> dist15;
-	/** @brief 20 Random distribution */
+	/** @brief 0-20  Pseudo-random uniform distribution */
 	std::uniform_int_distribution<std::mt19937::result_type> dist20;
-	/** @brief 30  Random distribution */
+	/** @brief 0-30  Pseudo-random uniform distribution */
 	std::uniform_int_distribution<std::mt19937::result_type> dist30;
-	/** @brief 50 Random distribution */
+	/** @brief 0-50  Pseudo-random uniform distribution */
 	std::uniform_int_distribution<std::mt19937::result_type> dist50;
-	/** @brief 100 Random distribution */
+	/** @brief 0-100 Pseudo-random uniform distribution */
 	std::uniform_int_distribution<std::mt19937::result_type> dist100;
 };

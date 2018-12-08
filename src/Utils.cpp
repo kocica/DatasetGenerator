@@ -42,21 +42,20 @@ namespace Utils
     {
         StrBuffer r;
         
-        /*
-        for(auto& p : std::filesystem::recursive_directory_iterator(path))
+        for (auto& p : std::experimental::filesystem::recursive_directory_iterator(path))
         {
-            if(p.status().type() == std::filesystem::file_type::directory)
+            if (p.status().type() == std::experimental::filesystem::file_type::directory)
             {
                 r.push_back(p.path().string());
             }
         }
-        */
 
         return r;
     }
 
-   void printUsage()
+    void printUsage()
     {
-        std::cout << "Usage: dataset_generator TODO :-)" << std::endl;
+        std::cout << "Usage: <bin_name> <path_2_backgrounds> <path_2_images> <image_width> <image_height>" << std::endl;
+        std::cout << "Also see Makefile for build flags." << std::endl;
     }
 }
