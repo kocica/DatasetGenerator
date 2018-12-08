@@ -41,7 +41,7 @@ void DtstGenerator::generate(std::vector<std::pair<cv::Point, cv::Point>>& b, cv
 	// RNG values
 	int rng_dir,            // Should the image be rotated to "left" or "right"
 	    rng_rot,            // Should image be rotated / blured / ...
-		rng_val;            // Pseudo-random generated value
+	    rng_val;            // Pseudo-random generated value
 
 
 	// Blur image with random kernel size
@@ -194,7 +194,7 @@ void DtstGenerator::generateCropped(std::vector<std::pair<cv::Point, cv::Point>>
 	// RNG values
 	int rng_dir,            // Should the image be rotated to "left" or "right"
 	    rng_rot,            // Should image be rotated / blured
-		rng_val;            // Pseudo-random generated value
+	    rng_val;            // Pseudo-random generated value
 
 	// Check whether image is not bigger than background
 	while (m2.rows > m.rows || m2.cols > m.cols)

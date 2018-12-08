@@ -12,9 +12,9 @@
 
 namespace Utils
 {
-    int parseArgs(int argc, char **argv, std::string& pathBgs, std::string& pathImgs, cv::Size& s)
+    int parseArgs(int argc, char **argv, std::string& pathBgs, std::string& pathImgs/*, cv::Size& s*/)
     {
-        if (argc < 5)
+        if (argc < 3)
         {
             printUsage();
             return 1;
@@ -22,7 +22,7 @@ namespace Utils
 
         pathBgs  = argv[1];
         pathImgs = argv[2];
-        s        = cv::Size{ std::stoi(argv[3]), std::stoi(argv[4]) };
+        //s        = cv::Size{ std::stoi(argv[3]), std::stoi(argv[4]) };
 
         return 0;
     }
@@ -30,7 +30,7 @@ namespace Utils
     void loadImages(const std::string& path, ImgBuffer& imgs, const int& mode)
     {
         std::vector<cv::String> strBuffer;
-        cv::glob(path, strBuffer, false);
+        cv::glob(cv::String{path} + cv::String{"/*.png"}, strBuffer, false);
 
         for (auto& it : strBuffer)
         {
@@ -38,24 +38,21 @@ namespace Utils
         }
     }
 
-    StrBuffer getDirectories(const std::string& path)
+    void getDirectories(const std::string& path, StrBuffer& strBuffer)
     {
-        StrBuffer r;
-        
         for (auto& p : std::experimental::filesystem::recursive_directory_iterator(path))
         {
             if (p.status().type() == std::experimental::filesystem::file_type::directory)
             {
-                r.push_back(p.path().string());
+                strBuffer.push_back(p.path().string());
             }
         }
-
-        return r;
     }
 
     void printUsage()
     {
-        std::cout << "Usage: <bin_name> <path_2_backgrounds> <path_2_images> <image_width> <image_height>" << std::endl;
-        std::cout << "Also see Makefile for build flags." << std::endl;
+        std::cout << "Usage: <bin_name> <path_2_backgrounds> <path_2_images>" << std::endl;
+        std::cout << "e.g. : ./dataset-generator ./backgrounds/ ./data/" << std::endl;
+        std::cout << "Note : See also Makefile for build flags" << std::endl;
     }
 }

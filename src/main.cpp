@@ -20,57 +20,57 @@ int main(int argc, char **argv)
 {
 	///////////////////////////////////////////////////////////////////////////////////////////////
 	// Locals
-	int               imgClass   = 2;
+
+	int               imgClass   = 0;
 	int               imgCounter = 0;
 	int               ret        = 0;
 	int               w          = 0;
 	int               h          = 0;
 	size_t            i          = 0;
-	constexpr size_t  nGenImgs   = 200;
+	constexpr size_t  nGenImgs   = 2;
 
-	std::string       pathToBackgrounds, pathToImages, backgroundName, imageName, csvName;
-	std::string       classID = "noentry";
+	std::string       pathToBackgrounds, pathToImages, backgroundName, imageName, csvName, classID;
 
 	Utils::ImgBuffer  bgs;
 	Utils::ImgBuffer  imgs;
 
-	cv::Size          outImgSize;
+	Utils::StrBuffer  dirs;
+
+	cv::Size          outImgSize = std::move( cv::Size{ 0, 0 } );
 
 	cv::Mat           bg;
 	cv::Mat           img;
 
 	///////////////////////////////////////////////////////////////////////////////////////////////
 	// Parse arguments
-	if ((ret = Utils::parseArgs(argc, argv, pathToBackgrounds, pathToImages, outImgSize)) != 0)
+
+	if ((ret = Utils::parseArgs(argc, argv, pathToBackgrounds, pathToImages)) != 0)
 	{
 		return ret;
 	}
 
 	///////////////////////////////////////////////////////////////////////////////////////////////
-	// Load iamges
-	Utils::loadImages(pathToBackgrounds, bgs,  cv::IMREAD_COLOR);
-#ifdef IMG_CROPPED
-	Utils::loadImages(pathToImages,      imgs, cv::IMREAD_UNCHANGED);  // With alpha-channel
-#else
-	Utils::loadImages(pathToImages,      imgs, cv::IMREAD_COLOR);
-#endif
+	// Load images & directories of classes
 
-	int nBackgrounds = bgs.size();
-	int nImages      = imgs.size();
+	Utils::loadImages(pathToBackgrounds, bgs,  cv::IMREAD_COLOR);
+	Utils::getDirectories(pathToImages, dirs);
+
 
 	///////////////////////////////////////////////////////////////////////////////////////////////
 	// Regions of interest selection
+
 	ROI_buffer roiBuffer;
 
-#ifdef ROI_SELECTION
-	cv::Mat exampleBg = cv::imread("data/roi-selection.png");
-	cv::resize(exampleBg, exampleBg, outImgSize);                      // Size from input args
-	roiBuffer = getRegionsOfInterest(exampleBg);
-#endif
+#	ifdef ROI_SELECTION
+		cv::Mat exampleBg = cv::imread("data/roi-selection.png");
+		cv::resize(exampleBg, exampleBg, outImgSize);                      // Size from input args
+		roiBuffer = getRegionsOfInterest(exampleBg);
+#	endif
 
 
 	///////////////////////////////////////////////////////////////////////////////////////////////
 	// RNG
+
 	std::mt19937 rng;
 	rng.seed(std::random_device()());
 
@@ -78,21 +78,16 @@ int main(int argc, char **argv)
 	std::uniform_int_distribution<std::mt19937::result_type> distY = std::uniform_int_distribution<std::mt19937::result_type> (0, bgs.at(0).rows - 350);
 	std::uniform_int_distribution<std::mt19937::result_type> distI = std::uniform_int_distribution<std::mt19937::result_type> (0, imgs.size() - 1);
 
-#ifdef RANDOM_W_H
-	std::uniform_int_distribution<std::mt19937::result_type> distW = std::uniform_int_distribution<std::mt19937::result_type> (225, 300);
-	std::uniform_int_distribution<std::mt19937::result_type> distH = std::uniform_int_distribution<std::mt19937::result_type> (150, 200);
-	std::uniform_int_distribution<std::mt19937::result_type> distB = std::uniform_int_distribution<std::mt19937::result_type> (0, 20);
-#endif
+#	ifdef RANDOM_W_H
+		std::uniform_int_distribution<std::mt19937::result_type> distW = std::uniform_int_distribution<std::mt19937::result_type> (225, 300);
+		std::uniform_int_distribution<std::mt19937::result_type> distH = std::uniform_int_distribution<std::mt19937::result_type> (150, 200);
+		std::uniform_int_distribution<std::mt19937::result_type> distB = std::uniform_int_distribution<std::mt19937::result_type> (0, 20);
+#	endif
 
 	///////////////////////////////////////////////////////////////////////////////////////////////
-	// Generate N images
+	// Get image width & height
 
-	for (imgCounter = 0; imgCounter < nGenImgs; imgCounter++)
-	{
-		bgs.at(imgCounter % nBackgrounds).copyTo(bg);
-
-
-#ifdef RANDOM_W_H
+#	ifdef RANDOM_W_H
 		w = distW(rng);
 		h = distH(rng);
 
@@ -100,42 +95,66 @@ int main(int argc, char **argv)
 		{
 			std::swap(w, h);
 		}
-#else
+#	else
 		w = 407;
 		h = 309;
-#endif
+#	endif
 
-		cv::Rect roi {(int) distX(rng), (int) distY(rng), w, h};
-		bg  = bg(roi);
+	///////////////////////////////////////////////////////////////////////////////////////////////
+	// Generate N images for each class
 
-#ifdef IMG_CROPPED
-		imgs.at(i).copyTo(img);
-#else
-		imgs.at(distI(rng)).copyTo(img);
-#endif
+	for (auto& path : dirs)
+	{
+		imgs.clear();
 
-		// Output annotation file
-		std::ofstream annotFile(Utils::out + classID + std::to_string(imgCounter) + Utils::annotExt);
+#		ifdef IMG_CROPPED
+			Utils::loadImages(path, imgs, cv::IMREAD_UNCHANGED);  // With alpha-channel
+#		else
+			Utils::loadImages(path, imgs, cv::IMREAD_COLOR);
+#		endif
 
-		// Image & annotation generator
-		DtstGenerator gen(annotFile, imgClass);
+		int nBackgrounds = bgs.size();
+		int nImages      = imgs.size();
 
-		// Generate images and annotations
-#ifdef IMG_CROPPED
-		gen.generate(roiBuffer, bg, img);
-#else
-		gen.generateCropped(roiBuffer, bg, img);
-#endif
+		classID  = std::experimental::filesystem::path(path).filename();
+		imgClass = Utils::getImgClass(path);
 
-#ifdef ROI_SELECTION
-		cv::resize(bg, bg, outImgSize);
-#endif
+		for (imgCounter = 0; imgCounter < nGenImgs; imgCounter++)
+		{
+			bgs.at(imgCounter % nBackgrounds).copyTo(bg);
 
-		// Save image
-		imwrite(Utils::out + classID + std::to_string(imgCounter) + Utils::imageExt, bg);
+			cv::Rect roi { (int)distX(rng), (int)distY(rng), w, h };
+			bg  = bg(roi);
 
-		// Move to next image or start from the beginning
-		i = (i == (nImages - 1)) ? 0 : i + 1;
+#			ifdef IMG_CROPPED
+				imgs.at(i).copyTo(img);
+#			else
+				imgs.at(distI(rng)).copyTo(img);
+#			endif
+
+			// Output annotation file
+			std::ofstream annotFile(Utils::out + classID + std::to_string(imgCounter) + Utils::annotExt);
+
+			// Image & annotation generator
+			DtstGenerator gen(annotFile, imgClass);
+
+			// Generate images and annotations
+#			ifdef IMG_CROPPED
+				gen.generate(roiBuffer, bg, img);
+#			else
+				gen.generateCropped(roiBuffer, bg, img);
+#			endif
+
+#			ifdef ROI_SELECTION
+				cv::resize(bg, bg, outImgSize);
+#			endif
+
+			// Save image
+			imwrite(Utils::out + classID + std::to_string(imgCounter) + Utils::imageExt, bg);
+
+			// Move to next image or start from the beginning
+			i = (i == (nImages - 1)) ? 0 : i + 1;
+		}
 	}
 
 	// Destroy OpenCV windows

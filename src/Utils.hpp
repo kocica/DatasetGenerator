@@ -14,6 +14,8 @@
 #include <iostream>
 #include <vector>
 #include <experimental/filesystem>
+#include <fstream>
+#include <string>
 
 // OpenCV
 #include <opencv2/core/core.hpp>
@@ -33,6 +35,14 @@ namespace Utils
     const std::string annotExt   = ".txt";
     const std::string imageExt   = ".jpg";
     const std::string out        = "out/";
+    const std::string imgClassFn  = "imgClass";
+
+
+    auto getImgClass = [](const std::string& path) -> int
+    {
+        std::fstream fs { path + "/" + imgClassFn, std::ios_base::in };
+        int ret; fs >> ret; return(ret);
+    };
 
     /**
      * @brief From specified path (directory) loads all images to buffer
@@ -52,15 +62,15 @@ namespace Utils
      * @param [out] pathImg Directory with images placed into bacgrounds
      * @param [out] s Size of output images
      */
-    int parseArgs(int argc, char **argv, std::string& pathBgs, std::string& pathImgs, cv::Size& s);
+    int parseArgs(int argc, char **argv, std::string& pathBgs, std::string& pathImgs/*, cv::Size& s*/);
 
     /**
      * @brief Returns buffer of strings with all directories in path
      * 
      * @param [in] path Directory where we're lookin for directories
-     * @return Buffer of strings with paths
+     * @param [out] strBuffer Buffer of strings with directories in path
      */
-    StrBuffer getDirectories(const std::string& path);
+    void getDirectories(const std::string& path, StrBuffer& strBuffer);
 
     /**
      * @brief Prints program usage
