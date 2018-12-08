@@ -86,7 +86,7 @@ namespace ImageProcessing
         cv::cvtColor(alpha, alpha, cv::COLOR_GRAY2BGR);
         alpha.convertTo(alpha, CV_32FC3, 1.0/255);
 
-        if (b)
+        /*if (b)
         {
             v *= 1.25;
             subtract(img, v, img);
@@ -94,7 +94,7 @@ namespace ImageProcessing
         else
         {
             add(img, v, img);
-        }
+        }*/
 
         multiply(alpha, img, img);
 

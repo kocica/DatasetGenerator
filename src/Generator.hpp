@@ -66,6 +66,9 @@ protected:
 	 */
 	void createAnnotation(cv::Mat& m, cv::Mat& m2, int& x, int& y);
 
+	// DEBUG
+	void showBbox(cv::Mat& m, cv::Mat& m2, int& x, int& y);
+
 private:
 	/** @brief Annotation output file */
 	std::ofstream& m_out;
