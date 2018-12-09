@@ -119,6 +119,8 @@ int main(int argc, char **argv)
 		classID  = std::experimental::filesystem::path(path).filename();
 		imgClass = Utils::getImgClass(path);
 
+		i = 0;
+
 		for (imgCounter = 0; imgCounter < nGenImgs; imgCounter++)
 		{
 			bgs.at(imgCounter % nBackgrounds).copyTo(bg);
