@@ -25,8 +25,8 @@ DtstGenerator::DtstGenerator(std::ofstream& out, int imgClass)
 	dist50    = std::uniform_int_distribution<std::mt19937::result_type> (0, 50);
 
 	distDiv   = std::uniform_int_distribution<std::mt19937::result_type> (10, 18);
-	distAlpha = std::uniform_int_distribution<std::mt19937::result_type> (10, 20);
-	distBeta  = std::uniform_int_distribution<std::mt19937::result_type> (0,  50);
+	distAlpha = std::uniform_int_distribution<std::mt19937::result_type> (10, 18);
+	distBeta  = std::uniform_int_distribution<std::mt19937::result_type> (0,  40);
 
 #ifdef IMG_CROPPED
 	dist100   = std::uniform_int_distribution<std::mt19937::result_type> (30, 100);
@@ -161,10 +161,18 @@ void DtstGenerator::generate(std::vector<std::pair<cv::Point, cv::Point>>& b, cv
 		}
 	}
 
-
-
 	// Create annotation
 	createAnnotation(m, m2, x, y);
+
+	// Hue
+#ifdef HUE
+	rng_dir = dist30( m_rng );
+
+	if ( rng_dir < 15 )      // 50% Modify Hue
+	{
+		ImageProcessing::modifyHue(m2);
+	}
+#endif
 
 
 	// Luminescence
@@ -181,16 +189,19 @@ void DtstGenerator::generate(std::vector<std::pair<cv::Point, cv::Point>>& b, cv
 		cv::divide(m2, distDiv(m_rng) / 10, m2); // Divide (decrease luminescence)
 		m2.convertTo(m2, CV_8UC3);               // Convert back to unsigned integer, 3 channels
 	}
-	else                     // 34% Nothing
+	else                     // 34% Nothing 2 do
 	{
 
 	}
-
 #endif
 
+
+	// Copy sign into the background on position (x, y)
 	ImageProcessing::copy2bg(m, m2, alpha, x, y);
 
+
 #ifdef GENERATOR_DEBUG
+	// Show annotated bbox around sign
 	showBbox(m, m2, x, y);
 #endif
 }

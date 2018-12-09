@@ -29,6 +29,7 @@ CFLAGS    += -DIMG_CROPPED        # Using cropped images with alpha channel
 #CFLAGS    += -DROTATE_XY          # Rotate TS XY
 #CFLAGS    += -DROTATE_Z           # Rotate TS Z
 CFLAGS    += -DLUMINESCENCE       # Modify luminescence of inserted signs
+CFLAGS    += -DHUE                # Modify hue of inserted signs
 
 ################## Compilation ##################
 

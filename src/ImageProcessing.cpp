@@ -172,20 +172,101 @@ namespace ImageProcessing
         cv::Mat newImage = cv::Mat::zeros( img.size(), img.type() );
 
         // Do the operation for each pixel: newImage(i,j) = alpha*img(i,j) + beta
-        /*for( int y = 0; y < img.rows; y++ )
+        /*
+        for( int y = 0; y < img.rows; y++ )
         {
             for( int x = 0; x < img.cols; x++ )
             {
                 for( int c = 0; c < 3; c++ )
                 {
-                    newImage.at<cv::Vec3b>(y,x)[c] = cv::saturate_cast<uchar>( alpha * ( img.at<cv::Vec3b>(y,x)[c] ) + beta );
+                    newImage.at<cv::Vec3b>(y, x)[c] = cv::saturate_cast<uchar>( alpha * ( img.at<cv::Vec3b>(y, x)[c] ) + beta );
                 }
             }
-        }*/
+        }
+        */
 
         // Probably more optimized method
-        img.convertTo(newImage, -1, 1.0, 0);
+        img.convertTo(newImage, -1, alpha, beta);
 
         img = std::move( newImage );
+    }
+
+
+    // Hue intervals @see http://answers.opencv.org/question/93899/hsv-range-for-rubiks-cube-color/
+
+    /** @brief Says whether hue value is inside Red hue interval */
+    static bool isRedHue(const unsigned char& hue)    { return (( hue >=   0 && hue <=   9 ) || ( hue >= 177 && hue <= 180 )); }
+    /** @brief Says whether hue value is inside Blue hue interval */
+    static bool isBlueHue(const unsigned char& hue)   { return  ( hue >= 100 && hue <= 120 ); }
+    /** @brief Says whether hue value is inside Yellow hue interval */
+    static bool isYellowHue(const unsigned char& hue) { return  ( hue >=  16 && hue <=  45 ); }
+
+
+
+
+    void modifyHue(cv::Mat& img)
+    {
+        std::mt19937 rng;
+        rng.seed(std::random_device()());
+
+        std::uniform_int_distribution<std::mt19937::result_type> probDist(1, 10);
+        std::uniform_int_distribution<std::mt19937::result_type> hueDistRedLow(0, 9);
+        std::uniform_int_distribution<std::mt19937::result_type> hueDistRedHigh(177, 180);
+        std::uniform_int_distribution<std::mt19937::result_type> hueDistBlue(100, 115);
+        std::uniform_int_distribution<std::mt19937::result_type> hueDistYellow(16, 45);
+
+        unsigned char newHueRed;
+        if ( probDist( rng ) <= 5 )  // 50%
+            newHueRed              = hueDistRedLow( rng );  //   0 -   9
+        else                         // 50%
+            newHueRed              = hueDistRedHigh( rng ); // 177 - 180
+
+        unsigned char newHueBlue   = hueDistBlue( rng );
+        unsigned char newHueYellow = hueDistYellow( rng );
+
+
+        // DEBUG
+        //cv::namedWindow("1", cv::WINDOW_AUTOSIZE);
+        //cv::namedWindow("2", cv::WINDOW_AUTOSIZE);
+        //cv::imshow("1", img);
+
+
+        cv::Mat hsv;
+
+        // Convert sign to HSV
+        cv::cvtColor(img, hsv, CV_BGR2HSV);
+
+        // For each pixel
+        for (int y = 0; y < hsv.rows; y++)
+        {
+            for (int x = 0; x < hsv.cols; x++)
+            {
+                // H = 0; S = 1; V = 2
+                // Get Hue (8-bit unsigned integer)
+                unsigned char& h = hsv.at<cv::Vec3b>(y, x)[0];
+
+                // TODO: For each pixel separately -- hueDistRed( rng ) ???
+
+                if ( isRedHue( h ) ) // RED
+                {
+                    h = newHueRed;
+                }
+                else if ( isBlueHue( h ) )
+                {
+                    h = newHueBlue;
+                }
+                else if ( isYellowHue( h ) )
+                {
+                    h = newHueYellow;
+                }
+            }
+        }
+
+        // Convert sign back to BGR
+        cv::cvtColor(hsv, img, CV_HSV2BGR);
+
+        // DEBUG
+        //cv::imshow("2", img);
+        //cv::waitKey(0);
     }
 }

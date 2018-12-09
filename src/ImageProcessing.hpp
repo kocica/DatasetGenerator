@@ -14,6 +14,7 @@
 #include <iostream>
 #include <stdlib.h>
 #include <algorithm>
+#include <random>
 
 // OpenCV
 #include <opencv2/core/core.hpp>
@@ -87,4 +88,11 @@ namespace ImageProcessing
 	 * @param [in] beta beta value [0-100]
 	 */
 	void modifyLuminescence(cv::Mat& img, const double& alpha, const int& beta);
+
+	/**
+	 * @brief Slightly modify hue (color) of the sign
+	 *
+	 * @param [in, out] img Image of which hue is modified
+	 */
+	void modifyHue(cv::Mat& img);
 }
