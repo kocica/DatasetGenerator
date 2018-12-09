@@ -28,6 +28,7 @@ CFLAGS    += -DIMG_CROPPED        # Using cropped images with alpha channel
 #CFLAGS    += -DBLUR               # Blue traffic signs
 #CFLAGS    += -DROTATE_XY          # Rotate TS XY
 #CFLAGS    += -DROTATE_Z           # Rotate TS Z
+CFLAGS    += -DLUMINESCENCE       # Modify luminescence of inserted signs
 
 ################## Compilation ##################
 

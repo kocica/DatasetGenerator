@@ -77,4 +77,14 @@ namespace ImageProcessing
 	 * @param [in] angle Angle
 	 */
 	void rotateAngle(cv::Mat& img, double angle);
+
+	/**
+	 * @brief Modify luminescence of image in order to formula (for each pixel of image):
+	 *                                         $newImage(i,j) = alpha * image(i,j) + beta$
+	 * 
+	 * @param [in, out] img Image of which luminescence is modified
+	 * @param [in] alpha alpha value [1.0-3.0]
+	 * @param [in] beta beta value [0-100]
+	 */
+	void modifyLuminescence(cv::Mat& img, const double& alpha, const int& beta);
 }

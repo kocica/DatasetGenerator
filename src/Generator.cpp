@@ -17,17 +17,21 @@ DtstGenerator::DtstGenerator(std::ofstream& out, int imgClass)
 	srand(time(NULL));
 	m_rng.seed(std::random_device()());
 
-	dist2   = std::uniform_int_distribution<std::mt19937::result_type> (0, 1);
-	dist10  = std::uniform_int_distribution<std::mt19937::result_type> (2, 10);
-	dist15  = std::uniform_int_distribution<std::mt19937::result_type> (0, 15);
-	dist20  = std::uniform_int_distribution<std::mt19937::result_type> (0, 20);
-	dist30  = std::uniform_int_distribution<std::mt19937::result_type> (0, 30);
-	dist50  = std::uniform_int_distribution<std::mt19937::result_type> (0, 50);
+	dist2     = std::uniform_int_distribution<std::mt19937::result_type> (0, 1);
+	dist10    = std::uniform_int_distribution<std::mt19937::result_type> (2, 10);
+	dist15    = std::uniform_int_distribution<std::mt19937::result_type> (0, 15);
+	dist20    = std::uniform_int_distribution<std::mt19937::result_type> (0, 20);
+	dist30    = std::uniform_int_distribution<std::mt19937::result_type> (0, 30);
+	dist50    = std::uniform_int_distribution<std::mt19937::result_type> (0, 50);
+
+	distDiv   = std::uniform_int_distribution<std::mt19937::result_type> (10, 18);
+	distAlpha = std::uniform_int_distribution<std::mt19937::result_type> (10, 20);
+	distBeta  = std::uniform_int_distribution<std::mt19937::result_type> (0,  50);
 
 #ifdef IMG_CROPPED
-	dist100 = std::uniform_int_distribution<std::mt19937::result_type> (30, 100);
+	dist100   = std::uniform_int_distribution<std::mt19937::result_type> (30, 100);
 #else
-	dist100 = std::uniform_int_distribution<std::mt19937::result_type> (20, 60);
+	dist100   = std::uniform_int_distribution<std::mt19937::result_type> (20, 60);
 #endif
 }
 
@@ -164,23 +168,25 @@ void DtstGenerator::generate(std::vector<std::pair<cv::Point, cv::Point>>& b, cv
 
 
 	// Luminescence
-	rng_dir = dist20(m_rng);
-	rng_rot = dist20(m_rng);
+#ifdef LUMINESCENCE
+	rng_dir = dist30( m_rng );
 
-	if (rng_dir < 6)
+	if ( rng_dir < 10 )      // 33% Increase luminescence
 	{
-		if (rng_rot > 6)
-		{
-			m2.convertTo(m2, CV_32FC3);
-			cv::divide(m2, 1.3, m2);
-			m2.convertTo(m2, CV_8UC3);
-		}
-		else
-		{
-			cv::multiply(m2, 1.05, m2);
-		}
+		ImageProcessing::modifyLuminescence( m2, distAlpha( m_rng ) / 10., distBeta( m_rng ) );
+	}
+	else if ( rng_dir < 20 ) // 33% Decrease luminescence
+	{
+		m2.convertTo(m2, CV_32FC3);              // Convert to floating point, 3 channels
+		cv::divide(m2, distDiv(m_rng) / 10, m2); // Divide (decrease luminescence)
+		m2.convertTo(m2, CV_8UC3);               // Convert back to unsigned integer, 3 channels
+	}
+	else                     // 34% Nothing
+	{
+
 	}
 
+#endif
 
 	ImageProcessing::copy2bg(m, m2, alpha, x, y);
 

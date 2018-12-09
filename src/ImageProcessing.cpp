@@ -164,4 +164,28 @@ namespace ImageProcessing
 
         resized.copyTo(img);
     }
+
+
+
+    void modifyLuminescence(cv::Mat& img, const double& alpha, const int& beta)
+    {
+        cv::Mat newImage = cv::Mat::zeros( img.size(), img.type() );
+
+        // Do the operation for each pixel: newImage(i,j) = alpha*img(i,j) + beta
+        /*for( int y = 0; y < img.rows; y++ )
+        {
+            for( int x = 0; x < img.cols; x++ )
+            {
+                for( int c = 0; c < 3; c++ )
+                {
+                    newImage.at<cv::Vec3b>(y,x)[c] = cv::saturate_cast<uchar>( alpha * ( img.at<cv::Vec3b>(y,x)[c] ) + beta );
+                }
+            }
+        }*/
+
+        // Probably more optimized method
+        img.convertTo(newImage, -1, 1.0, 0);
+
+        img = std::move( newImage );
+    }
 }

@@ -97,4 +97,11 @@ private:
 	std::uniform_int_distribution<std::mt19937::result_type> dist50;
 	/** @brief 0-100 Pseudo-random uniform distribution */
 	std::uniform_int_distribution<std::mt19937::result_type> dist100;
+
+	/** @brief Pseudo-random uniform distribution for luminescence modification */
+	std::uniform_int_distribution<std::mt19937::result_type> distAlpha;
+	/** @brief Pseudo-random uniform distribution for luminescence modification */
+	std::uniform_int_distribution<std::mt19937::result_type> distBeta;
+	/** @brief Pseudo-random uniform distribution for luminescence modification */
+	std::uniform_int_distribution<std::mt19937::result_type> distDiv;
 };

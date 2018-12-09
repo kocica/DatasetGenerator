@@ -27,7 +27,7 @@ int main(int argc, char **argv)
 	int               w          = 0;
 	int               h          = 0;
 	size_t            i          = 0;
-	constexpr size_t  nGenImgs   = 2;
+	constexpr size_t  nGenImgs   = 10;
 
 	std::string       pathToBackgrounds, pathToImages, backgroundName, imageName, csvName, classID;
 
