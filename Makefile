@@ -24,11 +24,12 @@ OBJS       = $(patsubst %.cpp, %.o, $(SOURCES))
 #CFLAGS    += -DRANDOM_W_H         # Generated image has random Width and Height
 CFLAGS    += -DIMG_CROPPED        # Using cropped images with alpha channel
 #CFLAGS    += -DROI_SELECTION      # Selection of ROIs where signs are generated
-#CFLAGS    += -DGENERATOR_DEBUG    # Debug info, show annotation bounding-boxes
+CFLAGS    += -DGENERATOR_DEBUG    # Debug info, show annotation bounding-boxes
 #CFLAGS    += -DBLUR               # Blue traffic signs
-#CFLAGS    += -DROTATE_XY          # Rotate TS XY
-#CFLAGS    += -DROTATE_Z           # Rotate TS Z
-CFLAGS    += -DLUMINESCENCE       # Modify luminescence of inserted signs
+CFLAGS    += -DROTATE_XY          # Rotate TS XY
+CFLAGS    += -DROTATE_Z           # Rotate TS Z
+CFLAGS    += -DBIGHTCONTRAST      # Modify brightness and contrast of inserted signs
+CFLAGS    += -DGAMMACORRECT       # Correction of gamma channel of inserted signs
 CFLAGS    += -DHUE                # Modify hue of inserted signs
 
 ################## Compilation ##################

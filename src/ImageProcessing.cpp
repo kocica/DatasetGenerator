@@ -192,6 +192,23 @@ namespace ImageProcessing
     }
 
 
+    void gammaCorrection(cv::Mat& img, const double& gamma)
+    {
+        cv::Mat lookUpTable( 1, 256, CV_8U );
+        uchar* p = lookUpTable.ptr();
+
+        for( int i = 0; i < 256; ++i )
+        {
+            p[i] = cv::saturate_cast<uchar>( pow( i / 255.0, gamma ) * 255.0 );
+        }
+
+        cv::Mat res = img.clone();
+        cv::LUT( img, lookUpTable, res );
+
+        img = std::move( res );
+    }
+
+
     // Hue intervals @see http://answers.opencv.org/question/93899/hsv-range-for-rubiks-cube-color/
 
     /** @brief Says whether hue value is inside Red hue interval */
@@ -212,7 +229,7 @@ namespace ImageProcessing
         std::uniform_int_distribution<std::mt19937::result_type> probDist(1, 10);
         std::uniform_int_distribution<std::mt19937::result_type> hueDistRedLow(0, 9);
         std::uniform_int_distribution<std::mt19937::result_type> hueDistRedHigh(177, 180);
-        std::uniform_int_distribution<std::mt19937::result_type> hueDistBlue(100, 115);
+        std::uniform_int_distribution<std::mt19937::result_type> hueDistBlue(104, 109);
         std::uniform_int_distribution<std::mt19937::result_type> hueDistYellow(16, 45);
 
         unsigned char newHueRed;

@@ -104,4 +104,7 @@ private:
 	std::uniform_int_distribution<std::mt19937::result_type> distBeta;
 	/** @brief Pseudo-random uniform distribution for luminescence modification */
 	std::uniform_int_distribution<std::mt19937::result_type> distDiv;
+
+	/** @brief Pseudo-random uniform distribution for gamma correction */
+	std::uniform_int_distribution<std::mt19937::result_type> distGamma;
 };

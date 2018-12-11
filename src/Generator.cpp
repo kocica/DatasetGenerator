@@ -19,14 +19,16 @@ DtstGenerator::DtstGenerator(std::ofstream& out, int imgClass)
 
 	dist2     = std::uniform_int_distribution<std::mt19937::result_type> (0, 1);
 	dist10    = std::uniform_int_distribution<std::mt19937::result_type> (2, 10);
-	dist15    = std::uniform_int_distribution<std::mt19937::result_type> (0, 15);
+	dist15    = std::uniform_int_distribution<std::mt19937::result_type> (0, 10);
 	dist20    = std::uniform_int_distribution<std::mt19937::result_type> (0, 20);
 	dist30    = std::uniform_int_distribution<std::mt19937::result_type> (0, 30);
 	dist50    = std::uniform_int_distribution<std::mt19937::result_type> (0, 50);
 
-	distDiv   = std::uniform_int_distribution<std::mt19937::result_type> (10, 18);
-	distAlpha = std::uniform_int_distribution<std::mt19937::result_type> (10, 18);
-	distBeta  = std::uniform_int_distribution<std::mt19937::result_type> (0,  40);
+	distDiv   = std::uniform_int_distribution<std::mt19937::result_type> (10, 17);
+	distAlpha = std::uniform_int_distribution<std::mt19937::result_type> (10, 17);
+	distBeta  = std::uniform_int_distribution<std::mt19937::result_type> (0,  37);
+
+	distGamma = std::uniform_int_distribution<std::mt19937::result_type> (110, 200);
 
 #ifdef IMG_CROPPED
 	dist100   = std::uniform_int_distribution<std::mt19937::result_type> (30, 100);
@@ -115,7 +117,7 @@ void DtstGenerator::generate(std::vector<std::pair<cv::Point, cv::Point>>& b, cv
 #ifdef ROTATE_XY
 	rng_dir = dist2 (m_rng);
 	rng_rot = dist20(m_rng);
-	rng_val = dist15(m_rng);
+	rng_val = dist10(m_rng);
 
 	if (rng_rot < 6)
 	{
@@ -129,7 +131,7 @@ void DtstGenerator::generate(std::vector<std::pair<cv::Point, cv::Point>>& b, cv
 #ifdef ROTATE_Z
 	rng_dir = dist2(m_rng);
 	rng_rot = dist20(m_rng);
-	rng_val = dist15(m_rng);
+	rng_val = dist20(m_rng);
 
 	if (rng_rot < 6)
 	{
@@ -175,24 +177,29 @@ void DtstGenerator::generate(std::vector<std::pair<cv::Point, cv::Point>>& b, cv
 #endif
 
 
-	// Luminescence
-#ifdef LUMINESCENCE
+	// Brightness & contrast adjustment
+#ifdef BIGHTCONTRAST
 	rng_dir = dist30( m_rng );
 
-	if ( rng_dir < 10 )      // 33% Increase luminescence
+	if ( rng_dir < 10 )      // 33%
 	{
 		ImageProcessing::modifyLuminescence( m2, distAlpha( m_rng ) / 10., distBeta( m_rng ) );
 	}
-	else if ( rng_dir < 20 ) // 33% Decrease luminescence
+	else if ( rng_dir < 20 ) // 33%
 	{
 		m2.convertTo(m2, CV_32FC3);              // Convert to floating point, 3 channels
-		cv::divide(m2, distDiv(m_rng) / 10, m2); // Divide (decrease luminescence)
+		cv::divide(m2, distDiv(m_rng) / 10, m2); // Divide (decrease brightness & contrast)
 		m2.convertTo(m2, CV_8UC3);               // Convert back to unsigned integer, 3 channels
 	}
 	else                     // 34% Nothing 2 do
 	{
 
 	}
+#endif
+
+	// Gamma correction
+#ifdef GAMMACORRECT
+	ImageProcessing::gammaCorrection( m2, distGamma( m_rng ) / 100.0 );
 #endif
 
 
@@ -254,7 +261,7 @@ void DtstGenerator::generateCropped(std::vector<std::pair<cv::Point, cv::Point>>
 #ifdef ROTATE_XY
 	rng_dir = dist2 (m_rng);
 	rng_rot = dist20(m_rng);
-	rng_val = dist15(m_rng);
+	rng_val = dist10(m_rng);
 
 	if (rng_rot < 6)
 	{
@@ -267,7 +274,7 @@ void DtstGenerator::generateCropped(std::vector<std::pair<cv::Point, cv::Point>>
 #ifdef ROTATE_Z
 	rng_dir = dist2(m_rng);
 	rng_rot = dist20(m_rng);
-	rng_val = dist15(m_rng);
+	rng_val = dist20(m_rng);
 
 	if (rng_rot < 6)
 	{

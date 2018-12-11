@@ -90,6 +90,11 @@ namespace ImageProcessing
 	void modifyLuminescence(cv::Mat& img, const double& alpha, const int& beta);
 
 	/**
+	 * TODO
+	 */
+	void gammaCorrection(cv::Mat& img, const double& gamma);
+
+	/**
 	 * @brief Slightly modify hue (color) of the sign
 	 *
 	 * @param [in, out] img Image of which hue is modified
