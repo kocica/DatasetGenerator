@@ -21,6 +21,12 @@
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
 
+/// @brief Pseudo-random number generator
+namespace PRNG
+{
+	using Uniform = std::uniform_int_distribution<std::mt19937::result_type>;
+}
+
 /**
  * @brief Namespace with image processing functions
  */
@@ -71,13 +77,13 @@ namespace ImageProcessing
 	 */
 	void copy2bgCropped(cv::Mat& bg, cv::Mat& img, const int& x, const int& y);
 
-	/**
+	/** UNUSED
 	 * @brief Rotate image in Y axis
 	 * 
 	 * @param [in, out] img Rotated image
 	 * @param [in] angle Angle
 	 */
-	void rotateAngle(cv::Mat& img, double angle);
+	//void rotateAngle(cv::Mat& img, double angle);
 
 	/**
 	 * @brief Modify luminescence of image in order to formula (for each pixel of image):

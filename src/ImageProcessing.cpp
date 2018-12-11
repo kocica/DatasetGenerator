@@ -122,10 +122,11 @@ namespace ImageProcessing
     {
         double ratio = r / 100.;
 
+#ifdef ROI_SELECTION
+
         // Resize image due to its position in background
         // ie. closer to the middle, smaller image will be
 
-#ifdef ROI_SELECTION
         if (pos > mid)
         {
             ratio = (pos - mid) / (double) mid;
@@ -135,35 +136,46 @@ namespace ImageProcessing
             ratio  = 1 - (pos / (double) mid);
             ratio *= 0.5;
         }
-#endif
 
-        cv::resize(m, m, cv::Size{(int) (ratio * m.rows), (int) (ratio * m.cols)});
+        cv::resize( m, m, cv::Size{ (int) (ratio * m.rows), (int) (ratio * m.cols) } );
+#else
+
+        // Resize image to approtimate size
+
+        // TODO !!!
+        double diffSize = 407 / 309; //m.cols / (double) m.rows;
+
+        cv::resize( m, m, cv::Size{ (int) (ratio * 50), (int) (ratio * diffSize * 50) } );
+#endif
     }
 
 
 
+
+    /* UNUSED
 
     void rotateAngle(cv::Mat& img, double angle)
     {
         double width  = img.size().width;
         double height = img.size().height;
 
-        cv::Point2d center = cv::Point2d (width / 2, height / 2);
-        cv::Rect bounds    = cv::RotatedRect (center, img.size(), angle).boundingRect();
-        cv::Mat resized    = cv::Mat::zeros (bounds.size(), img.type());
+        cv::Point2d center = cv::Point2d(width / 2, height / 2);
+        cv::Rect bounds    = cv::RotatedRect(center, img.size(), angle).boundingRect();
+        cv::Mat resized    = cv::Mat::zeros(bounds.size(), img.type());
 
         double offsetX = (bounds.width - width)   / 2;
         double offsetY = (bounds.height - height) / 2;
 
-        cv::Rect roi = cv::Rect (offsetX, offsetY, width, height);
-        img.copyTo (resized (roi));
-        center += cv::Point2d (offsetX, offsetY);
+        cv::Rect roi = cv::Rect(offsetX, offsetY, width, height);
+        img.copyTo (resized(roi));
+        center += cv::Point2d(offsetX, offsetY);
 
-        cv::Mat M = cv::getRotationMatrix2D (center, angle, 1.0);
-        cv::warpAffine (resized, resized, M, resized.size());
+        cv::Mat M = cv::getRotationMatrix2D(center, angle, 1.0);
+        cv::warpAffine(resized, resized, M, resized.size());
 
         resized.copyTo(img);
     }
+    */
 
 
 
@@ -214,7 +226,7 @@ namespace ImageProcessing
     /** @brief Says whether hue value is inside Red hue interval */
     static bool isRedHue(const unsigned char& hue)    { return (( hue >=   0 && hue <=   9 ) || ( hue >= 177 && hue <= 180 )); }
     /** @brief Says whether hue value is inside Blue hue interval */
-    static bool isBlueHue(const unsigned char& hue)   { return  ( hue >= 100 && hue <= 120 ); }
+    static bool isBlueHue(const unsigned char& hue)   { return  ( hue >= 101 && hue <= 150 ); }
     /** @brief Says whether hue value is inside Yellow hue interval */
     static bool isYellowHue(const unsigned char& hue) { return  ( hue >=  16 && hue <=  45 ); }
 
@@ -226,11 +238,11 @@ namespace ImageProcessing
         std::mt19937 rng;
         rng.seed(std::random_device()());
 
-        std::uniform_int_distribution<std::mt19937::result_type> probDist(1, 10);
-        std::uniform_int_distribution<std::mt19937::result_type> hueDistRedLow(0, 9);
-        std::uniform_int_distribution<std::mt19937::result_type> hueDistRedHigh(177, 180);
-        std::uniform_int_distribution<std::mt19937::result_type> hueDistBlue(104, 109);
-        std::uniform_int_distribution<std::mt19937::result_type> hueDistYellow(16, 45);
+        PRNG::Uniform probDist(1, 10);
+        PRNG::Uniform hueDistRedLow(0, 9);
+        PRNG::Uniform hueDistRedHigh(177, 180);
+        PRNG::Uniform hueDistBlue(104, 109);
+        PRNG::Uniform hueDistYellow(16, 45);
 
         unsigned char newHueRed;
         if ( probDist( rng ) <= 5 )  // 50%

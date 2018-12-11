@@ -17,23 +17,25 @@ DtstGenerator::DtstGenerator(std::ofstream& out, int imgClass)
 	srand(time(NULL));
 	m_rng.seed(std::random_device()());
 
-	dist2     = std::uniform_int_distribution<std::mt19937::result_type> (0, 1);
-	dist10    = std::uniform_int_distribution<std::mt19937::result_type> (2, 10);
-	dist15    = std::uniform_int_distribution<std::mt19937::result_type> (0, 10);
-	dist20    = std::uniform_int_distribution<std::mt19937::result_type> (0, 20);
-	dist30    = std::uniform_int_distribution<std::mt19937::result_type> (0, 30);
-	dist50    = std::uniform_int_distribution<std::mt19937::result_type> (0, 50);
+	probability = PRNG::Uniform(1, 100);
 
-	distDiv   = std::uniform_int_distribution<std::mt19937::result_type> (10, 17);
-	distAlpha = std::uniform_int_distribution<std::mt19937::result_type> (10, 17);
-	distBeta  = std::uniform_int_distribution<std::mt19937::result_type> (0,  37);
+	dist2       = PRNG::Uniform(0, 1);
+	dist5       = PRNG::Uniform(1, 5);
+	dist10      = PRNG::Uniform(2, 10);
+	dist15      = PRNG::Uniform(0, 10);
+	dist20      = PRNG::Uniform(0, 20);
+	dist30      = PRNG::Uniform(0, 30);
+	dist50      = PRNG::Uniform(0, 50);
 
-	distGamma = std::uniform_int_distribution<std::mt19937::result_type> (110, 200);
+	distDiv     = PRNG::Uniform(10, 13);
+	distAlpha   = PRNG::Uniform(10, 10);
+	distBeta    = PRNG::Uniform(0,  30);
+	distGamma   = PRNG::Uniform(115, 195);
 
 #ifdef IMG_CROPPED
-	dist100   = std::uniform_int_distribution<std::mt19937::result_type> (30, 100);
+	dist100     = PRNG::Uniform(40, 100);
 #else
-	dist100   = std::uniform_int_distribution<std::mt19937::result_type> (20, 60);
+	dist100     = PRNG::Uniform(20, 60);
 #endif
 }
 
@@ -45,24 +47,21 @@ DtstGenerator::~DtstGenerator()
 void DtstGenerator::generate(std::vector<std::pair<cv::Point, cv::Point>>& b, cv::Mat m, cv::Mat m2)
 {
 	// RNG values
-	int rng_dir,            // Should the image be rotated to "left" or "right"
-	    rng_rot,            // Should image be rotated / blured / ...
-	    rng_val;            // Pseudo-random generated value
+	int prngProbability;
+	int prngValue;
 
 
 	// Blur image with random kernel size
 #ifdef BLUR
-	rng_rot = dist20(m_rng);
-	rng_val = dist20(m_rng);
-	rng_val = (rng_val % 2) == 0 ? rng_val + 1: rng_val; // Generate even number (eg. 3, 5, 7, ...)
+	prngProbability = probability(m_rng);
+	prngValue       = dist10(m_rng);
+	prngValue       = (prngValue % 2) == 0 ? prngValue + 1: prngValue; // Generate even number (eg. 3, 5, 7, ...)
 
-	if (rng_rot < 3)
+	if (prngProbability <= 5)  // 5%
 	{
-		cv::blur(m2, m2, cv::Size(rng_val, rng_val));
+		cv::blur(m2, m2, cv::Size(prngValue, prngValue));
 	}
 #endif
-
-
 
 	// Get alpha channel from transparent image
 	std::vector<cv::Mat> channels;
@@ -74,15 +73,9 @@ void DtstGenerator::generate(std::vector<std::pair<cv::Point, cv::Point>>& b, cv
 	cv::cvtColor(m2, m2, cv::COLOR_BGRA2BGR);
 
 
-	// Resize inserted image to 50x50
-	cv::resize(m2,    m2,    cv::Size(50, 50));
-	cv::resize(alpha, alpha, cv::Size(50, 50));
-
-
-
 	// Select random bounding box
 #ifdef ROI_SELECTION
-	std::uniform_int_distribution<std::mt19937::result_type> distN(0, b.size() - 1);
+	PRNG::Uniform distN(0, b.size() - 1);
 	int noBbox = distN(m_rng);
 	auto bbox  = b.at(noBbox);
 
@@ -99,8 +92,8 @@ void DtstGenerator::generate(std::vector<std::pair<cv::Point, cv::Point>>& b, cv
 
 
 	// Generate random position in bounding box
-	std::uniform_int_distribution<std::mt19937::result_type> distN2(min_x, max_x);
-	std::uniform_int_distribution<std::mt19937::result_type> distN3(min_y, max_y);
+	PRNG::Uniform distN2(min_x, max_x);
+	PRNG::Uniform distN3(min_y, max_y);
 
 	int x = distN2(m_rng); 
 	int y = distN3(m_rng);
@@ -108,38 +101,39 @@ void DtstGenerator::generate(std::vector<std::pair<cv::Point, cv::Point>>& b, cv
 
 
 	// Resize image due to its position in background
-	rng_val = dist100(m_rng);
-	ImageProcessing::resize(m2,     x, m.cols/2, rng_val);
-	ImageProcessing::resize(alpha,  x, m.cols/2, rng_val);
+	prngValue = dist100(m_rng);
+	ImageProcessing::resize(m2,     x, m.cols/2, prngValue);
+	ImageProcessing::resize(alpha,  x, m.cols/2, prngValue);
 	
 
-	// Rotate image left/right
-#ifdef ROTATE_XY
-	rng_dir = dist2 (m_rng);
-	rng_rot = dist20(m_rng);
-	rng_val = dist10(m_rng);
+	// Rotate image Z
+#ifdef ROTATE_Z
+	prngProbability = probability(m_rng);
+	prngValue       = dist5(m_rng);
 
-	if (rng_rot < 6)
+	if (prngProbability <= 30) // 30%
 	{
-		ImageProcessing::rotateAngle(m2,    rng_dir == 0 ? rng_val : -rng_val);
-		ImageProcessing::rotateAngle(alpha, rng_dir == 0 ? rng_val : -rng_val);
+		prngProbability = probability(m_rng);
+		prngValue       = prngProbability <= 50 ? prngValue : -prngValue;
+
+		ImageProcessing::rotateImage(m2,    m2,    90, 90, 90 + prngValue, 0, 0, 200, 200);
+		ImageProcessing::rotateImage(alpha, alpha, 90, 90, 90 + prngValue, 0, 0, 200, 200);
 	}
 #endif
 
 
-	// Rotate image Z
-#ifdef ROTATE_Z
-	rng_dir = dist2(m_rng);
-	rng_rot = dist20(m_rng);
-	rng_val = dist20(m_rng);
+	// Rotate image Y
+#ifdef ROTATE_Y
+	prngProbability = probability(m_rng);
+	prngValue       = dist50(m_rng);
 
-	if (rng_rot < 6)
+	if (prngProbability <= 50) // 50%
 	{
-		rng_val = rng_dir == 0 ? rng_val : -rng_val;
-		rng_val = 90 + rng_val;
+		prngProbability = probability(m_rng);
+		prngValue       = prngProbability <= 50 ? prngValue : -prngValue;
 
-		ImageProcessing::rotateImage(m2,    m2,    90, rng_val, 90, 0, 0, 200, 200);
-		ImageProcessing::rotateImage(alpha, alpha, 90, rng_val, 90, 0, 0, 200, 200);
+		ImageProcessing::rotateImage(m2,    m2,    90, 90 + prngValue, 90, 0, 0, 200, 200);
+		ImageProcessing::rotateImage(alpha, alpha, 90, 90 + prngValue, 90, 0, 0, 200, 200);
 	}
 #endif
 
@@ -168,9 +162,9 @@ void DtstGenerator::generate(std::vector<std::pair<cv::Point, cv::Point>>& b, cv
 
 	// Hue
 #ifdef HUE
-	rng_dir = dist30( m_rng );
+	prngProbability = probability(m_rng);
 
-	if ( rng_dir < 15 )      // 50% Modify Hue
+	if ( prngProbability <= 50 )  // 50% Modify Hue
 	{
 		ImageProcessing::modifyHue(m2);
 	}
@@ -179,29 +173,29 @@ void DtstGenerator::generate(std::vector<std::pair<cv::Point, cv::Point>>& b, cv
 
 	// Brightness & contrast adjustment
 #ifdef BIGHTCONTRAST
-	rng_dir = dist30( m_rng );
+	prngProbability = probability(m_rng);
 
-	if ( rng_dir < 10 )      // 33%
+	if ( prngProbability <= 20 ) // 20%
 	{
 		ImageProcessing::modifyLuminescence( m2, distAlpha( m_rng ) / 10., distBeta( m_rng ) );
 	}
-	else if ( rng_dir < 20 ) // 33%
+	else if ( prngProbability <= 40 ) // 20%
 	{
 		m2.convertTo(m2, CV_32FC3);              // Convert to floating point, 3 channels
 		cv::divide(m2, distDiv(m_rng) / 10, m2); // Divide (decrease brightness & contrast)
 		m2.convertTo(m2, CV_8UC3);               // Convert back to unsigned integer, 3 channels
 	}
-	else                     // 34% Nothing 2 do
-	{
-
-	}
 #endif
 
 	// Gamma correction
 #ifdef GAMMACORRECT
-	ImageProcessing::gammaCorrection( m2, distGamma( m_rng ) / 100.0 );
-#endif
+	prngProbability = probability(m_rng);
 
+	if ( prngProbability <= 50 ) // 50%
+	{
+		ImageProcessing::gammaCorrection( m2, distGamma( m_rng ) / 100.0 );
+	}
+#endif
 
 	// Copy sign into the background on position (x, y)
 	ImageProcessing::copy2bg(m, m2, alpha, x, y);
@@ -213,12 +207,15 @@ void DtstGenerator::generate(std::vector<std::pair<cv::Point, cv::Point>>& b, cv
 #endif
 }
 
+
+
+
 void DtstGenerator::generateCropped(std::vector<std::pair<cv::Point, cv::Point>>& b, cv::Mat m, cv::Mat m2)
 {
 	// RNG values
-	int rng_dir,            // Should the image be rotated to "left" or "right"
-	    rng_rot,            // Should image be rotated / blured
-	    rng_val;            // Pseudo-random generated value
+	int prngProbability;
+	int prngValue;
+
 
 	// Check whether image is not bigger than background
 	while (m2.rows > m.rows || m2.cols > m.cols)
@@ -229,7 +226,7 @@ void DtstGenerator::generateCropped(std::vector<std::pair<cv::Point, cv::Point>>
 
 	// Select random bounding box
 #ifdef ROI_SELECTION
-	std::uniform_int_distribution<std::mt19937::result_type> distN(0, b.size() - 1);
+	PRNG::Uniform distN(0, b.size() - 1);
 	int noBbox = distN(m_rng);
 	auto bbox  = b.at(noBbox);
 
@@ -246,44 +243,15 @@ void DtstGenerator::generateCropped(std::vector<std::pair<cv::Point, cv::Point>>
 
 
 	// Generate random position in bounding box
-	std::uniform_int_distribution<std::mt19937::result_type> distN2(min_x, max_x);
-	std::uniform_int_distribution<std::mt19937::result_type> distN3(min_y, max_y);
+	PRNG::Uniform distN2(min_x, max_x);
+	PRNG::Uniform distN3(min_y, max_y);
 
 	int x = distN2(m_rng); 
 	int y = distN3(m_rng);
 
 
-	rng_val = dist100(m_rng);
-	cv::resize(m2, m2, cv::Size{rng_val, rng_val});
-
-
-	// Rotate image left/right
-#ifdef ROTATE_XY
-	rng_dir = dist2 (m_rng);
-	rng_rot = dist20(m_rng);
-	rng_val = dist10(m_rng);
-
-	if (rng_rot < 6)
-	{
-		ImageProcessing::rotateAngle(m2,    rng_dir == 0 ? rng_val : -rng_val);
-	}
-#endif
-
-
-	// Rotate image Z
-#ifdef ROTATE_Z
-	rng_dir = dist2(m_rng);
-	rng_rot = dist20(m_rng);
-	rng_val = dist20(m_rng);
-
-	if (rng_rot < 6)
-	{
-		rng_val = rng_dir == 0 ? rng_val : -rng_val;
-		rng_val = 90 + rng_val;
-
-		ImageProcessing::rotateImage(m2,    m2,    90, rng_val, 90, 0, 0, 200, 200);
-	}
-#endif
+	prngValue = dist100(m_rng);
+	ImageProcessing::resize(m2,     x, m.cols/2, prngValue);
 
 
 	// Copy image to background
@@ -304,7 +272,6 @@ void DtstGenerator::generateCropped(std::vector<std::pair<cv::Point, cv::Point>>
 			y -= (y + m2.rows) - m.rows;
 		}
 	}
-
 
 
 	// Create annotation
@@ -329,6 +296,9 @@ void DtstGenerator::generateCropped(std::vector<std::pair<cv::Point, cv::Point>>
 #endif
 }
 
+
+
+
 void DtstGenerator::createAnnotation(cv::Mat& m, cv::Mat& m2, int& x, int& y)
 {
 	// Save image class
@@ -340,6 +310,9 @@ void DtstGenerator::createAnnotation(cv::Mat& m, cv::Mat& m2, int& x, int& y)
 	m_out << (double) m2.cols / m.cols << " ";
 	m_out << (double) m2.rows / m.rows << std::endl;
 }
+
+
+
 
 void DtstGenerator::showBbox(cv::Mat& m, cv::Mat& m2, int& x, int& y)
 {

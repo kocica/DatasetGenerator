@@ -56,6 +56,8 @@ public:
 	void generateCropped(std::vector<std::pair<cv::Point, cv::Point>>& b, cv::Mat m, cv::Mat m2);
 
 protected:
+
+	
 	/**
 	 * @brief Create annotation file with same name as result image
 	 *
@@ -83,28 +85,32 @@ private:
 	std::mt19937   m_rng;
 
 
+	/** @brief Pseudo-random uniform distribution for probability */
+	PRNG::Uniform probability;
+
 	/** @brief 0-2   Pseudo-random uniform distribution */
-	std::uniform_int_distribution<std::mt19937::result_type> dist2;
+	PRNG::Uniform dist2;
+	/** @brief 1-5   Pseudo-random uniform distribution */
+	PRNG::Uniform dist5;
 	/** @brief 0-10  Pseudo-random uniform distribution */
-	std::uniform_int_distribution<std::mt19937::result_type> dist10;
+	PRNG::Uniform dist10;
 	/** @brief 0-15  Pseudo-random uniform distribution */
-	std::uniform_int_distribution<std::mt19937::result_type> dist15;
+	PRNG::Uniform dist15;
 	/** @brief 0-20  Pseudo-random uniform distribution */
-	std::uniform_int_distribution<std::mt19937::result_type> dist20;
+	PRNG::Uniform dist20;
 	/** @brief 0-30  Pseudo-random uniform distribution */
-	std::uniform_int_distribution<std::mt19937::result_type> dist30;
+	PRNG::Uniform dist30;
 	/** @brief 0-50  Pseudo-random uniform distribution */
-	std::uniform_int_distribution<std::mt19937::result_type> dist50;
+	PRNG::Uniform dist50;
 	/** @brief 0-100 Pseudo-random uniform distribution */
-	std::uniform_int_distribution<std::mt19937::result_type> dist100;
+	PRNG::Uniform dist100;
 
 	/** @brief Pseudo-random uniform distribution for luminescence modification */
-	std::uniform_int_distribution<std::mt19937::result_type> distAlpha;
+	PRNG::Uniform distAlpha;
 	/** @brief Pseudo-random uniform distribution for luminescence modification */
-	std::uniform_int_distribution<std::mt19937::result_type> distBeta;
+	PRNG::Uniform distBeta;
 	/** @brief Pseudo-random uniform distribution for luminescence modification */
-	std::uniform_int_distribution<std::mt19937::result_type> distDiv;
-
+	PRNG::Uniform distDiv;
 	/** @brief Pseudo-random uniform distribution for gamma correction */
-	std::uniform_int_distribution<std::mt19937::result_type> distGamma;
+	PRNG::Uniform distGamma;
 };
