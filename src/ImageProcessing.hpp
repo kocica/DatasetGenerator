@@ -83,7 +83,7 @@ namespace ImageProcessing
 	 * @param [in, out] img Rotated image
 	 * @param [in] angle Angle
 	 */
-	//void rotateAngle(cv::Mat& img, double angle);
+	void rotateAngle(cv::Mat& img, double angle)  __attribute__ ((unused));
 
 	/************************************************************************************
 	 * @brief Modify luminescence of image in order to formula (for each pixel of image):
@@ -109,4 +109,12 @@ namespace ImageProcessing
 	 * @param [in, out] img Image of which hue is modified
 	 */
 	void modifyHue(cv::Mat& img);
+
+	/************************************************************************************
+	 * @brief Get average brightness of image
+	 *
+	 * @param [in] img Image of which brigthness we are looking for
+	 * @return Value in floating point representing amount of brightness in image
+	 */
+	double getImgBrightness(const cv::Mat& img);
 }

@@ -141,7 +141,6 @@ namespace ImageProcessing
     }
 
     ///////////////////////////////////////////////////////////////////////////////////////////////
-    /* UNUSED
     void rotateAngle(cv::Mat& img, double angle)
     {
         double width  = img.size().width;
@@ -163,7 +162,6 @@ namespace ImageProcessing
 
         resized.copyTo(img);
     }
-    */
 
     ///////////////////////////////////////////////////////////////////////////////////////////////
     void modifyLuminescence(cv::Mat& img, const double& alpha, const int& beta)
@@ -271,5 +269,32 @@ namespace ImageProcessing
 
         // Convert sign back to BGR
         cv::cvtColor(hsv, img, CV_HSV2BGR);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////////////////////
+    double getImgBrightness(const cv::Mat& img)
+    {
+        std::vector<cv::Mat> channels;
+        cv::Mat tmp;
+        cv::Mat lum;
+
+        img.copyTo(tmp);
+
+        split(tmp, channels);
+
+        // Convert image to YUV format
+        // Y = 0.299 * R
+        // U = 0.587 * G
+        // V = 0.144 * B
+        channels[0] = channels[0] * 0.299;
+        channels[1] = channels[1] * 0.587;
+        channels[2] = channels[2] * 0.114;
+
+        lum = channels[0] + channels [1] + channels[2];
+
+        cv::Scalar summ = cv::sum(lum);
+
+        // Percentage conversion factor
+        return (summ[0] / ((pow(2, 8) - 1) * img.rows * img.cols) * 2);
     }
 }
