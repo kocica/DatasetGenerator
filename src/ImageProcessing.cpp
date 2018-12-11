@@ -15,6 +15,7 @@
  */
 namespace ImageProcessing
 {
+    ///////////////////////////////////////////////////////////////////////////////////////////////
     void rotateImage(const cv::Mat &input, cv::Mat &output, double alpha, double beta, double gamma, double dx, double dy, double dz, double f)
     {
         alpha = (alpha - 90.) * CV_PI/180.;
@@ -74,9 +75,7 @@ namespace ImageProcessing
         cv::warpPerspective(input, output, trans, input.size(), cv::INTER_LANCZOS4);
     }
 
-
-
-
+    ///////////////////////////////////////////////////////////////////////////////////////////////
     void copy2bg(cv::Mat& bg, cv::Mat& img, cv::Mat& alpha, const int& x, const int& y)
     {
         int sizex = img.cols;
@@ -105,55 +104,44 @@ namespace ImageProcessing
         ouImage.copyTo(bg(cv::Rect(x, y, sizex, sizey)));
     }
 
-
-
-
-
+    ///////////////////////////////////////////////////////////////////////////////////////////////
     void copy2bgCropped(cv::Mat& bg, cv::Mat& img, const int& x, const int& y)
     {
         img.copyTo(bg(cv::Rect(x, y, img.cols, img.rows)));
     }
 
-
-
-
-
+    ///////////////////////////////////////////////////////////////////////////////////////////////
     void resize(cv::Mat& m, int pos, int mid, int r)
     {
         double ratio = r / 100.;
 
-#ifdef ROI_SELECTION
+#       ifdef ROI_SELECTION
+            // Resize image due to its position in background
+            // ie. closer to the middle, smaller image will be
 
-        // Resize image due to its position in background
-        // ie. closer to the middle, smaller image will be
+            if (pos > mid)
+            {
+                ratio = (pos - mid) / (double) mid;
+            }
+            else
+            {
+                ratio  = 1 - (pos / (double) mid);
+                ratio *= 0.5;
+            }
 
-        if (pos > mid)
-        {
-            ratio = (pos - mid) / (double) mid;
-        }
-        else
-        {
-            ratio  = 1 - (pos / (double) mid);
-            ratio *= 0.5;
-        }
+            cv::resize( m, m, cv::Size{ (int) (ratio * m.rows), (int) (ratio * m.cols) } );
+#       else
+            // Resize image to approtimate size
 
-        cv::resize( m, m, cv::Size{ (int) (ratio * m.rows), (int) (ratio * m.cols) } );
-#else
+            // TODO !!!
+            double diffSize = 407 / 309; //m.cols / (double) m.rows;
 
-        // Resize image to approtimate size
-
-        // TODO !!!
-        double diffSize = 407 / 309; //m.cols / (double) m.rows;
-
-        cv::resize( m, m, cv::Size{ (int) (ratio * 50), (int) (ratio * diffSize * 50) } );
-#endif
+            cv::resize( m, m, cv::Size{ (int) (ratio * 50), (int) (ratio * diffSize * 50) } );
+#       endif
     }
 
-
-
-
+    ///////////////////////////////////////////////////////////////////////////////////////////////
     /* UNUSED
-
     void rotateAngle(cv::Mat& img, double angle)
     {
         double width  = img.size().width;
@@ -177,8 +165,7 @@ namespace ImageProcessing
     }
     */
 
-
-
+    ///////////////////////////////////////////////////////////////////////////////////////////////
     void modifyLuminescence(cv::Mat& img, const double& alpha, const int& beta)
     {
         cv::Mat newImage = cv::Mat::zeros( img.size(), img.type() );
@@ -203,7 +190,7 @@ namespace ImageProcessing
         img = std::move( newImage );
     }
 
-
+    ///////////////////////////////////////////////////////////////////////////////////////////////
     void gammaCorrection(cv::Mat& img, const double& gamma)
     {
         cv::Mat lookUpTable( 1, 256, CV_8U );
@@ -220,9 +207,9 @@ namespace ImageProcessing
         img = std::move( res );
     }
 
-
+    ///////////////////////////////////////////////////////////////////////////////////////////////
     // Hue intervals @see http://answers.opencv.org/question/93899/hsv-range-for-rubiks-cube-color/
-
+    //
     /** @brief Says whether hue value is inside Red hue interval */
     static bool isRedHue(const unsigned char& hue)    { return (( hue >=   0 && hue <=   9 ) || ( hue >= 177 && hue <= 180 )); }
     /** @brief Says whether hue value is inside Blue hue interval */
@@ -230,9 +217,7 @@ namespace ImageProcessing
     /** @brief Says whether hue value is inside Yellow hue interval */
     static bool isYellowHue(const unsigned char& hue) { return  ( hue >=  16 && hue <=  45 ); }
 
-
-
-
+    ///////////////////////////////////////////////////////////////////////////////////////////////
     void modifyHue(cv::Mat& img)
     {
         std::mt19937 rng;
@@ -252,13 +237,6 @@ namespace ImageProcessing
 
         unsigned char newHueBlue   = hueDistBlue( rng );
         unsigned char newHueYellow = hueDistYellow( rng );
-
-
-        // DEBUG
-        //cv::namedWindow("1", cv::WINDOW_AUTOSIZE);
-        //cv::namedWindow("2", cv::WINDOW_AUTOSIZE);
-        //cv::imshow("1", img);
-
 
         cv::Mat hsv;
 
@@ -293,9 +271,5 @@ namespace ImageProcessing
 
         // Convert sign back to BGR
         cv::cvtColor(hsv, img, CV_HSV2BGR);
-
-        // DEBUG
-        //cv::imshow("2", img);
-        //cv::waitKey(0);
     }
 }

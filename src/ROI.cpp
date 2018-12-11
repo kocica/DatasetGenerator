@@ -14,6 +14,7 @@ ROI_buffer   buffer;
 cv::Point    pt;
 cv::Mat      img;
 
+///////////////////////////////////////////////////////////////////////////////////////////////
 void mouseClick(int event, int x, int y, int flags, void *param)
 {
 	switch(event)
@@ -49,6 +50,7 @@ void mouseClick(int event, int x, int y, int flags, void *param)
 	}
 }
 
+///////////////////////////////////////////////////////////////////////////////////////////////
 ROI_buffer getRegionsOfInterest(cv::Mat& m)
 {
 	m.copyTo(img);

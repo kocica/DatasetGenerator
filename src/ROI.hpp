@@ -25,7 +25,7 @@ using coords     = std::pair<cv::Point, cv::Point>;
 /** @brief Buffer of ROIs */
 using ROI_buffer = std::vector<coords>;
 
-/**
+/************************************************************************************
  * @brief Mouse click event handler
  * 
  * @param [in] event event type
@@ -35,7 +35,7 @@ using ROI_buffer = std::vector<coords>;
  */
 void mouseClick(int event, int x, int y, int flags, void *param);
 
-/**
+/************************************************************************************
  * @brief Selection of ROIs by user
  * 
  * @param [in, out] m Input image

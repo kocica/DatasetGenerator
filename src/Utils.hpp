@@ -35,9 +35,9 @@ namespace Utils
     const std::string annotExt   = ".txt";
     const std::string imageExt   = ".jpg";
     const std::string out        = "out/";
-    const std::string imgClassFn  = "imgClass";
+    const std::string imgClassFn = "imgClass";
 
-    /**
+    /************************************************************************************
      * @brief Read first number from annotation text file ie. number of the class
      *
      * @param [in] path Where are class directory & annotation file located
@@ -49,7 +49,7 @@ namespace Utils
         int ret; fs >> ret; return(ret);
     };
 
-    /**
+    /************************************************************************************
      * @brief From specified path (directory) loads all images to buffer
      * 
      * @param [in] path Directory
@@ -58,7 +58,7 @@ namespace Utils
      */
     void loadImages(const std::string& path, ImgBuffer& imgs, const int& mode);
 
-    /**
+    /************************************************************************************
      * @brief Arguments parser
      * 
      * @param [in] argc Number of arguments
@@ -69,7 +69,7 @@ namespace Utils
      */
     int parseArgs(int argc, char **argv, std::string& pathBgs, std::string& pathImgs/*, cv::Size& s*/);
 
-    /**
+    /************************************************************************************
      * @brief Returns buffer of strings with all directories in path
      * 
      * @param [in] path Directory where we're lookin for directories
@@ -77,7 +77,7 @@ namespace Utils
      */
     void getDirectories(const std::string& path, StrBuffer& strBuffer);
 
-    /**
+    /************************************************************************************
      * @brief Prints program usage
      */
     void printUsage();

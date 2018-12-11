@@ -31,7 +31,7 @@ CFLAGS    += -DIMG_CROPPED
 #CFLAGS    += -DROI_SELECTION
 
 # Debug info, show annotation bounding-boxes
-#CFLAGS    += -DGENERATOR_DEBUG
+CFLAGS    += -DGENERATOR_DEBUG
 
 # Blue traffic signs
 #CFLAGS    += -DBLUR
@@ -50,6 +50,9 @@ CFLAGS    += -DGAMMACORRECT
 
 # Modify hue of inserted signs
 CFLAGS    += -DHUE
+
+# Create annotation file for each generated image
+CFLAGS    += -DANNOTATION
 
 ################## Compilation ##################
 

@@ -12,6 +12,7 @@
 
 namespace Utils
 {
+    ///////////////////////////////////////////////////////////////////////////////////////////////
     int parseArgs(int argc, char **argv, std::string& pathBgs, std::string& pathImgs/*, cv::Size& s*/)
     {
         if (argc < 3)
@@ -27,6 +28,7 @@ namespace Utils
         return 0;
     }
 
+    ///////////////////////////////////////////////////////////////////////////////////////////////
     void loadImages(const std::string& path, ImgBuffer& imgs, const int& mode)
     {
         std::vector<cv::String> strBuffer;
@@ -38,6 +40,7 @@ namespace Utils
         }
     }
 
+    ///////////////////////////////////////////////////////////////////////////////////////////////
     void getDirectories(const std::string& path, StrBuffer& strBuffer)
     {
         for (auto& p : std::experimental::filesystem::recursive_directory_iterator(path))
@@ -49,10 +52,11 @@ namespace Utils
         }
     }
 
+    ///////////////////////////////////////////////////////////////////////////////////////////////
     void printUsage()
     {
         std::cout << "Usage: <bin_name> <path_2_backgrounds> <path_2_images>" << std::endl;
         std::cout << "e.g. : ./dataset-generator ./backgrounds/ ./data/" << std::endl;
-        std::cout << "Note : See also Makefile for build flags" << std::endl;
+        std::cout << "Note : See Makefile for build flags" << std::endl;
     }
 }

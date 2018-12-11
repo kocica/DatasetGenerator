@@ -32,7 +32,7 @@ namespace PRNG
  */
 namespace ImageProcessing
 {
-	/**
+	/************************************************************************************
 	 * @brief 3D rotation function
 	 * @param [in] input Input matrix
 	 * @param [out] output Output matrix
@@ -47,7 +47,7 @@ namespace ImageProcessing
 	 */
 	void rotateImage(const cv::Mat &input, cv::Mat &output, double alpha, double beta, double gamma, double dx, double dy, double dz, double f);
 
-	/**
+	/************************************************************************************
 	 * @brief Resize copied image due to its position in background
 	 *
 	 * @param [in] m image to be copied
@@ -56,7 +56,7 @@ namespace ImageProcessing
 	 */
 	void resize(cv::Mat& m, int pos, int mid, int r);
 
-	/**
+	/************************************************************************************
 	 * @brief Copy image to specified location in background
 	 * 
 	 * @param [in, out] bg Background where image is copied
@@ -67,7 +67,7 @@ namespace ImageProcessing
 	 */
 	void copy2bg(cv::Mat& bg, cv::Mat& img, cv::Mat& alpha, const int& x, const int& y);
 
-	/**
+	/************************************************************************************
 	 * @brief Copy cropped image to specified location in background
 	 * 
 	 * @param [in, out] bg Background where image is copied
@@ -77,7 +77,7 @@ namespace ImageProcessing
 	 */
 	void copy2bgCropped(cv::Mat& bg, cv::Mat& img, const int& x, const int& y);
 
-	/** UNUSED
+	/**** UNUSED ************************************************************************
 	 * @brief Rotate image in Y axis
 	 * 
 	 * @param [in, out] img Rotated image
@@ -85,7 +85,7 @@ namespace ImageProcessing
 	 */
 	//void rotateAngle(cv::Mat& img, double angle);
 
-	/**
+	/************************************************************************************
 	 * @brief Modify luminescence of image in order to formula (for each pixel of image):
 	 *                                         $newImage(i,j) = alpha * image(i,j) + beta$
 	 * 
@@ -95,12 +95,15 @@ namespace ImageProcessing
 	 */
 	void modifyLuminescence(cv::Mat& img, const double& alpha, const int& beta);
 
-	/**
-	 * TODO
+	/************************************************************************************
+	 * @brief Non-linear operation used to encode and decode luminance
+	 *
+	 * @param [in, out] img Modified image
+	 * @param [in] gamma Gamma value
 	 */
 	void gammaCorrection(cv::Mat& img, const double& gamma);
 
-	/**
+	/************************************************************************************
 	 * @brief Slightly modify hue (color) of the sign
 	 *
 	 * @param [in, out] img Image of which hue is modified
