@@ -20,7 +20,7 @@ DatasetGenerator_t::DatasetGenerator_t(std::ofstream& out, int imgClass)
 	srand(time(NULL));
 	m_rng.seed(std::random_device()());
 
-	m_probability = PRNG::Uniform(1, 100);
+	m_probability = PRNG::Uniform_t{1, 100};
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////

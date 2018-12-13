@@ -13,7 +13,7 @@
 namespace Utils
 {
     ///////////////////////////////////////////////////////////////////////////////////////////////
-    int parseArgs(int argc, char **argv, std::string& pathBgs, std::string& pathImgs/*, cv::Size& s*/)
+    int parseArgs(int argc, char **argv, std::string& pathBgs, std::string& pathImgs)
     {
         if (argc < 3)
         {
@@ -23,7 +23,8 @@ namespace Utils
 
         pathBgs  = argv[1];
         pathImgs = argv[2];
-        //s        = cv::Size{ std::stoi(argv[3]), std::stoi(argv[4]) };
+
+        // Used to be more complex parsing back in the days
 
         return 0;
     }

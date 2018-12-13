@@ -10,7 +10,7 @@
 
 #include "ROI.hpp"
 
-ROI_buffer   buffer;
+ROIBuffer_t  buffer;
 cv::Point    pt;
 cv::Mat      img;
 
@@ -51,7 +51,7 @@ void mouseClick(int event, int x, int y, int flags, void *param)
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
-ROI_buffer getRegionsOfInterest(cv::Mat& m)
+ROIBuffer_t getRegionsOfInterest(cv::Mat& m)
 {
 	m.copyTo(img);
 	cv::namedWindow("bbox", 1);

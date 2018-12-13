@@ -22,7 +22,7 @@ class DatasetGeneratorTransparent_t : public DatasetGenerator_t
 public:
 
     DatasetGeneratorTransparent_t() = delete;
-	DatasetGeneratorTransparent_t(std::ofstream& out, int imgClass);
+	explicit DatasetGeneratorTransparent_t(std::ofstream& out, int imgClass);
 	virtual ~DatasetGeneratorTransparent_t() = default;
 
 	/************************************************************************************
@@ -83,15 +83,15 @@ protected:
 private:
 
 	/** @brief 1-5   Pseudo-random uniform distribution */
-	PRNG::Uniform m_dist5;
+	PRNG::Uniform_t m_dist5;
 	/** @brief 0-50  Pseudo-random uniform distribution */
-	PRNG::Uniform m_dist50;
+	PRNG::Uniform_t m_dist50;
 	/** @brief Pseudo-random uniform distribution for brightness & contrast modification */
-	PRNG::Uniform m_distAlpha;
+	PRNG::Uniform_t m_distAlpha;
 	/** @brief Pseudo-random uniform distribution for brightness & contrast modification */
-	PRNG::Uniform m_distBeta;
+	PRNG::Uniform_t m_distBeta;
 	/** @brief Pseudo-random uniform distribution for brightness & contrast modification */
-	PRNG::Uniform m_distDiv;
+	PRNG::Uniform_t m_distDiv;
 	/** @brief Pseudo-random uniform distribution for gamma correction */
-	PRNG::Uniform m_distGamma;
+	PRNG::Uniform_t m_distGamma;
 };

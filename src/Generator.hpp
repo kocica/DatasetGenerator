@@ -19,6 +19,7 @@
 #include <chrono>
 #include <thread>
 #include <random>
+#include <utility>
 
 // Local
 #include "ImageProcessing.hpp"
@@ -36,7 +37,7 @@ class DatasetGenerator_t
 
 public:
 
-	DatasetGenerator_t(std::ofstream& out, int imgClass);
+	explicit DatasetGenerator_t(std::ofstream& out, int imgClass);
 	virtual ~DatasetGenerator_t() = default;
 
 	/************************************************************************************
@@ -90,9 +91,9 @@ protected:
 	/** @brief PRNG seed */
 	std::mt19937 m_rng;
 	/** @brief Pseudo-random uniform distribution for probability */
-	PRNG::Uniform m_probability;
+	PRNG::Uniform_t m_probability;
 	/** @brief TS size pseudo-random uniform distribution */
-	PRNG::Uniform m_distSignSize;
+	PRNG::Uniform_t m_distSignSize;
 
 private:
 

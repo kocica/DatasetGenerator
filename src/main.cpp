@@ -60,14 +60,14 @@ int main(int argc, char **argv)
 	std::mt19937 rng;
 	rng.seed(std::random_device()());
 
-	PRNG::Uniform distX = PRNG::Uniform(0, bgs.at(0).cols - 450);
-	PRNG::Uniform distY = PRNG::Uniform(0, bgs.at(0).rows - 350);
-	PRNG::Uniform distI;
+	PRNG::Uniform_t distX = PRNG::Uniform_t{0, (size_t) bgs.at(0).cols - 450};
+	PRNG::Uniform_t distY = PRNG::Uniform_t{0, (size_t) bgs.at(0).rows - 350};
+	PRNG::Uniform_t distI;
 	
 #	ifdef RANDOM_W_H
-		PRNG::Uniform distW = PRNG::Uniform(225, 300);
-		PRNG::Uniform distH = PRNG::Uniform(150, 200);
-		PRNG::Uniform distB = PRNG::Uniform(0, 20);
+		PRNG::Uniform_t distW = PRNG::Uniform_t{225, 300};
+		PRNG::Uniform_t distH = PRNG::Uniform_t{150, 200};
+		PRNG::Uniform_t distB = PRNG::Uniform_t{0, 20};
 #	endif
 
 	///////////////////////////////////////////////////////////////////////////////////////////////
@@ -89,7 +89,7 @@ int main(int argc, char **argv)
 	///////////////////////////////////////////////////////////////////////////////////////////////
 	// Regions of interest selection
 
-	ROI_buffer roiBuffer;
+	ROIBuffer_t roiBuffer;
 
 #	ifdef ROI_SELECTION
 		cv::Mat exampleBg = cv::imread("data/roi-selection.png");
@@ -98,7 +98,7 @@ int main(int argc, char **argv)
 #	endif
 
 	///////////////////////////////////////////////////////////////////////////////////////////////
-	// Generate N images for each class
+	// Iterate over all TS classes in given directory, load TS from each of them
 
 	for (auto& path : dirs)
 	{
@@ -117,12 +117,16 @@ int main(int argc, char **argv)
 		imgClass = Utils::getImgClass(path);
 
 		i = 0;
-		distI = PRNG::Uniform(0, imgs.size() - 1);
+		distI = PRNG::Uniform_t{0, imgs.size() - 1};
+
+		///////////////////////////////////////////////////////////////////////////////////////////////
+		// Generate `nGenImgs` images for each of the TS classes
 
 		for (imgCounter = 0; imgCounter < nGenImgs; imgCounter++)
 		{
 			bgs.at(imgCounter % nBackgrounds).copyTo(bg);
 
+			// Select random part of the background
 			cv::Rect roi { (int)distX(rng), (int)distY(rng), w, h };
 			bg  = bg(roi);
 
@@ -132,14 +136,13 @@ int main(int argc, char **argv)
 				imgs.at(distI(rng)).copyTo(img);
 #			endif
 
-			// Output annotation file passed to generator
-			std::ofstream annotFile(Utils::out + classID + std::to_string(imgCounter) + Utils::annotExt);
+			// Create output annotation file passed to generator
+			std::ofstream annotFile(Utils::outDir + classID + std::to_string(imgCounter) + Utils::antExt);
 
 			// Image & annotation generator
-			// TODO: Unique ptr
-			DatasetGenerator_t *generator;
+			DatasetGenerator_t* generator;
 
-			// Generate images and annotations
+			// Generate image with annotations
 #			ifdef IMG_TRANSPARENT
 				generator = new DatasetGeneratorTransparent_t{annotFile, imgClass};
 #			else
@@ -149,15 +152,17 @@ int main(int argc, char **argv)
 			generator->generateDataset(roiBuffer, bg, img);
 
 			// Save image
-			imwrite(Utils::out + classID + std::to_string(imgCounter) + Utils::imageExt, bg);
+			imwrite(Utils::outDir + classID + std::to_string(imgCounter) + Utils::imgExt, bg);
 
-			// Move to next image or start from the beginning
+			// Move to next TS or start from the beginning
 			i = (i == (nImages - 1)) ? 0 : i + 1;
 		}
 	}
 
-	// Destroy OpenCV windows
-	cv::destroyAllWindows();
+	// Destroy OpenCV windows if exists
+#	ifdef GENERATOR_DEBUG
+		cv::destroyAllWindows();
+#	endif
 
 	return 0;
 }

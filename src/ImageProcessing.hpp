@@ -24,7 +24,7 @@
 /// @brief Pseudo-random number generator
 namespace PRNG
 {
-	using Uniform = std::uniform_int_distribution<std::mt19937::result_type>;
+	using Uniform_t = std::uniform_int_distribution<std::mt19937::result_type>;
 }
 
 /**

@@ -32,10 +32,10 @@ namespace Utils
     /** @brief Buffer of strings */
     using StrBuffer = std::vector<std::string>;
 
-    const std::string annotExt   = ".txt";
-    const std::string imageExt   = ".jpg";
-    const std::string out        = "out/";
-    const std::string imgClassFn = "imgClass";
+    const std::string antExt      = ".txt";
+    const std::string imgExt      = ".jpg";
+    const std::string outDir      = "out/";
+    const std::string imgClassFn  = "imgClass";
 
     /************************************************************************************
      * @brief Read first number from annotation text file ie. number of the class

@@ -14,13 +14,13 @@
 DatasetGeneratorTransparent_t::DatasetGeneratorTransparent_t(std::ofstream& out, int imgClass)
     : DatasetGenerator_t{ out, imgClass }
 {
-	m_dist5        = PRNG::Uniform(1, 5);
-	m_dist50       = PRNG::Uniform(0, 50);
-	m_distDiv      = PRNG::Uniform(10, 13);
-	m_distAlpha    = PRNG::Uniform(10, 10);
-	m_distBeta     = PRNG::Uniform(0,  30);
-	m_distGamma    = PRNG::Uniform(115, 195);
-    m_distSignSize = PRNG::Uniform(40, 100);
+	m_dist5        = PRNG::Uniform_t{1, 5};
+	m_dist50       = PRNG::Uniform_t{0, 50};
+	m_distDiv      = PRNG::Uniform_t{10, 13};
+	m_distAlpha    = PRNG::Uniform_t{10, 10};
+	m_distBeta     = PRNG::Uniform_t{0, 30};
+	m_distGamma    = PRNG::Uniform_t{115, 195};
+	m_distSignSize = PRNG::Uniform_t{40, 100};
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
@@ -136,24 +136,24 @@ void DatasetGeneratorTransparent_t::generateDataset(const std::vector<std::pair<
 
 	// Select random bounding box or use whole image
 #	ifdef ROI_SELECTION
-		PRNG::Uniform distN(0, b.size() - 1);
+		PRNG::Uniform_t distN{0, b.size() - 1};
 		int noBbox = distN(m_rng);
 		auto bbox  = b.at(noBbox);
 
-		int max_x = std::max(bbox.first.x, bbox.second.x);
-		int min_x = std::min(bbox.first.x, bbox.second.x);
-		int max_y = std::max(bbox.first.y, bbox.second.y);
-		int min_y = std::min(bbox.first.y, bbox.second.y);
+		size_t max_x = std::max(bbox.first.x, bbox.second.x);
+		size_t min_x = std::min(bbox.first.x, bbox.second.x);
+		size_t max_y = std::max(bbox.first.y, bbox.second.y);
+		size_t min_y = std::min(bbox.first.y, bbox.second.y);
 #	else
-		int max_x = m.cols;
-		int min_x = 0;
-		int max_y = m.rows;
-		int min_y = 0;
+		size_t max_x = m.cols;
+		size_t min_x = 0;
+		size_t max_y = m.rows;
+		size_t min_y = 0;
 #	endif
 
 	// Generate random position in bounding box or image
-	PRNG::Uniform distN2(min_x, max_x);
-	PRNG::Uniform distN3(min_y, max_y);
+	PRNG::Uniform_t distN2{min_x, max_x};
+	PRNG::Uniform_t distN3{min_y, max_y};
 
 	int x = distN2(m_rng); 
 	int y = distN3(m_rng);

@@ -221,11 +221,11 @@ namespace ImageProcessing
         std::mt19937 rng;
         rng.seed(std::random_device()());
 
-        PRNG::Uniform probDist(1, 10);
-        PRNG::Uniform hueDistRedLow(0, 9);
-        PRNG::Uniform hueDistRedHigh(177, 180);
-        PRNG::Uniform hueDistBlue(104, 109);
-        PRNG::Uniform hueDistYellow(16, 45);
+        PRNG::Uniform_t probDist{1, 10};
+        PRNG::Uniform_t hueDistRedLow{0, 9};
+        PRNG::Uniform_t hueDistRedHigh{177, 180};
+        PRNG::Uniform_t hueDistBlue{104, 109};
+        PRNG::Uniform_t hueDistYellow{16, 45};
 
         unsigned char newHueRed;
         if ( probDist( rng ) <= 5 )  // 50%

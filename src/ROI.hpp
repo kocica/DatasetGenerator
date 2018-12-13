@@ -20,10 +20,10 @@
 #include <opencv2/imgproc/imgproc.hpp>
 
 /** @brief Position of ROI */
-using coords     = std::pair<cv::Point, cv::Point>;
+using Coords_t    = std::pair<cv::Point, cv::Point>;
 
 /** @brief Buffer of ROIs */
-using ROI_buffer = std::vector<coords>;
+using ROIBuffer_t = std::vector<Coords_t>;
 
 /************************************************************************************
  * @brief Mouse click event handler
@@ -41,4 +41,4 @@ void mouseClick(int event, int x, int y, int flags, void *param);
  * @param [in, out] m Input image
  * @return Buffer of ROIs
  */
-ROI_buffer getRegionsOfInterest(cv::Mat& m);
+ROIBuffer_t getRegionsOfInterest(cv::Mat& m);

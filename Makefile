@@ -71,3 +71,6 @@ $(BIN_NAME): $(HEADERS) $(SOURCES) $(OBJS)
 
 clean:
 	rm -f $(BIN_NAME) $(SRC)/*.o
+
+run:
+	./$(BIN_NAME) ./../Backgrounds/ ./data/
