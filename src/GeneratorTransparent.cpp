@@ -120,6 +120,32 @@ void DatasetGeneratorTransparent_t::opGammaCorrection(cv::Mat& m)
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
+void DatasetGeneratorTransparent_t::opGaussianNoise(cv::Mat& m)
+{
+#	ifdef GAUSSNOISE
+		m_prngProbability = m_probability(m_rng);
+
+		if ( m_prngProbability <= 5 ) // 5%
+		{
+			ImageProcessing::gaussianNoise( m );
+		}
+#	endif
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////
+void DatasetGeneratorTransparent_t::opSaltNPepperNoise(cv::Mat& m)
+{
+#	ifdef PEPPERNOISE
+		m_prngProbability = m_probability(m_rng);
+
+		if ( m_prngProbability <= 5 ) // 5%
+		{
+			ImageProcessing::saltNPepperNoise( m );
+		}
+#	endif
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////
 void DatasetGeneratorTransparent_t::generateDataset(const std::vector<std::pair<cv::Point, cv::Point>>& b, cv::Mat m, cv::Mat m2)
 {
 	std::vector<cv::Mat> channels;
@@ -133,6 +159,25 @@ void DatasetGeneratorTransparent_t::generateDataset(const std::vector<std::pair<
 
 	// Convert transparent image (4 channels) to BGR (3 channels) img
 	cv::cvtColor(m2, m2, cv::COLOR_BGRA2BGR);
+
+
+
+#ifdef dbg
+			cv::Mat mx = m2.clone();
+			cv::Mat my = m2.clone();
+
+			ImageProcessing::gaussianNoise(mx);
+			ImageProcessing::saltNPepperNoise(my);
+
+			cv::imshow("1", m2);
+			cv::imshow("2", mx);
+			cv::imshow("3", my);
+
+			cv::waitKey(0);
+
+			std::cout << m2.rows << " " << m2.cols << std::endl;
+#endif
+
 
 	// Select random bounding box or use whole image
 #	ifdef ROI_SELECTION
@@ -185,6 +230,11 @@ void DatasetGeneratorTransparent_t::generateDataset(const std::vector<std::pair<
 
 	// Gamma correction
 	opGammaCorrection(m2);
+
+	// P-Random noise
+	// TODO: Maybe add noise before TS is resized ?
+	opGaussianNoise(m2);
+	opSaltNPepperNoise(m2);
 
 	/////////////////////// CREATE IMG & ANNOTATION ///////////////////////
 

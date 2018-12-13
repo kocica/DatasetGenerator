@@ -28,7 +28,7 @@ OBJS       = $(patsubst %.cpp, %.o, $(SOURCES))
 CFLAGS    += -DIMG_TRANSPARENT
 
 # Selection of ROIs where signs are generated
-#CFLAGS    += -DROI_SELECTION
+CFLAGS    += -DROI_SELECTION
 
 # Debug info, show annotation bounding-boxes
 CFLAGS    += -DGENERATOR_DEBUG
@@ -53,6 +53,12 @@ CFLAGS    += -DHUE
 
 # Create annotation file for each generated image
 CFLAGS    += -DANNOTATION
+
+# Additive Gaussian noise
+CFLAGS    += -DGAUSSNOISE
+
+# Additive Salt and pepper noise
+CFLAGS    += -DPEPPERNOISE
 
 ################## Compilation ##################
 

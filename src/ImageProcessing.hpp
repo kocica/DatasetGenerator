@@ -117,4 +117,18 @@ namespace ImageProcessing
 	 * @return Value in floating point representing amount of brightness in image
 	 */
 	double getImgBrightness(const cv::Mat& img);
+
+	/************************************************************************************
+	 * @brief Additive Gaussian noise
+	 *
+	 * @param [in, out] img Image to be noised
+	 */
+	void gaussianNoise(cv::Mat& img);
+
+	/************************************************************************************
+	 * @brief Additive Salt and pepper noise
+	 *
+	 * @param [in, out] img Image to be noised
+	 */
+	void saltNPepperNoise(cv::Mat& img);
 }

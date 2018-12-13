@@ -80,6 +80,9 @@ protected:
 	 */
 	void opGammaCorrection(cv::Mat& m);
 
+    void opGaussianNoise(cv::Mat& m);
+    void opSaltNPepperNoise(cv::Mat& m);
+
 private:
 
 	/** @brief 1-5   Pseudo-random uniform distribution */

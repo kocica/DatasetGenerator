@@ -209,11 +209,11 @@ namespace ImageProcessing
     // Hue intervals @see http://answers.opencv.org/question/93899/hsv-range-for-rubiks-cube-color/
     //
     /** @brief Says whether hue value is inside Red hue interval */
-    static bool isRedHue(const unsigned char& hue)    { return (( hue >=   0 && hue <=   9 ) || ( hue >= 177 && hue <= 180 )); }
+    static bool isRedHue(const uchar& hue)    { return (( hue >=   0 && hue <=   9 ) || ( hue >= 177 && hue <= 180 )); }
     /** @brief Says whether hue value is inside Blue hue interval */
-    static bool isBlueHue(const unsigned char& hue)   { return  ( hue >= 101 && hue <= 150 ); }
+    static bool isBlueHue(const uchar& hue)   { return  ( hue >= 101 && hue <= 150 ); }
     /** @brief Says whether hue value is inside Yellow hue interval */
-    static bool isYellowHue(const unsigned char& hue) { return  ( hue >=  16 && hue <=  45 ); }
+    static bool isYellowHue(const uchar& hue) { return  ( hue >=  16 && hue <=  45 ); }
 
     ///////////////////////////////////////////////////////////////////////////////////////////////
     void modifyHue(cv::Mat& img)
@@ -227,14 +227,14 @@ namespace ImageProcessing
         PRNG::Uniform_t hueDistBlue{104, 109};
         PRNG::Uniform_t hueDistYellow{16, 45};
 
-        unsigned char newHueRed;
+        uchar newHueRed;
         if ( probDist( rng ) <= 5 )  // 50%
             newHueRed              = hueDistRedLow( rng );  //   0 -   9
         else                         // 50%
             newHueRed              = hueDistRedHigh( rng ); // 177 - 180
 
-        unsigned char newHueBlue   = hueDistBlue( rng );
-        unsigned char newHueYellow = hueDistYellow( rng );
+        uchar newHueBlue   = hueDistBlue( rng );
+        uchar newHueYellow = hueDistYellow( rng );
 
         cv::Mat hsv;
 
@@ -242,30 +242,31 @@ namespace ImageProcessing
         cv::cvtColor(img, hsv, CV_BGR2HSV);
 
         // For each pixel
-        for (int y = 0; y < hsv.rows; y++)
+
+        cv::MatIterator_<cv::Vec3b> begin = hsv.begin<cv::Vec3b>();
+        cv::MatIterator_<cv::Vec3b> end   = hsv.end<cv::Vec3b>();
+
+        std::for_each(begin, end, [&](cv::Vec3b& p)
         {
-            for (int x = 0; x < hsv.cols; x++)
+            // H = 0; S = 1; V = 2
+            // Get Hue (8-bit unsigned integer)
+            uchar& h = p[0];
+
+            // TODO: Gen value for each pixel separately -- hueDistRed( rng ) ???
+
+            if ( isRedHue( h ) ) // Red pixel
             {
-                // H = 0; S = 1; V = 2
-                // Get Hue (8-bit unsigned integer)
-                unsigned char& h = hsv.at<cv::Vec3b>(y, x)[0];
-
-                // TODO: For each pixel separately -- hueDistRed( rng ) ???
-
-                if ( isRedHue( h ) ) // RED
-                {
-                    h = newHueRed;
-                }
-                else if ( isBlueHue( h ) )
-                {
-                    h = newHueBlue;
-                }
-                else if ( isYellowHue( h ) )
-                {
-                    h = newHueYellow;
-                }
+                h = newHueRed;
             }
-        }
+            else if ( isBlueHue( h ) ) // Blue pixel
+            {
+                h = newHueBlue;
+            }
+            else if ( isYellowHue( h ) ) // Yellow pixel
+            {
+                h = newHueYellow;
+            }
+        });
 
         // Convert sign back to BGR
         cv::cvtColor(hsv, img, CV_HSV2BGR);
@@ -282,19 +283,44 @@ namespace ImageProcessing
 
         split(tmp, channels);
 
+        // TODO: Its BGR, not RGB - so maybe change indexes
+        //       0,1,2 -> 2,1,0
+
         // Convert image to YUV format
         // Y = 0.299 * R
-        // U = 0.587 * G
-        // V = 0.144 * B
         channels[0] = channels[0] * 0.299;
+        // U = 0.587 * G
         channels[1] = channels[1] * 0.587;
+        // V = 0.144 * B
         channels[2] = channels[2] * 0.114;
 
         lum = channels[0] + channels [1] + channels[2];
 
-        cv::Scalar summ = cv::sum(lum);
+        cv::Scalar sum = cv::sum(lum);
 
         // Percentage conversion factor
-        return (summ[0] / ((pow(2, 8) - 1) * img.rows * img.cols) * 2);
+        return (sum[0] / ((pow(2, 8) - 1) * img.rows * img.cols) * 2);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////////////////////
+    void gaussianNoise(cv::Mat& img)
+    {
+        cv::Mat gaussNoise = img.clone();
+        cv::randn(gaussNoise, 20, 20);
+
+        img = img + gaussNoise;
+    }
+
+	///////////////////////////////////////////////////////////////////////////////////////////////
+	void saltNPepperNoise(cv::Mat& img)
+    {
+        cv::Mat saltpepperNoise = cv::Mat::zeros(img.rows, img.cols, CV_8U);
+        randu(saltpepperNoise, 0, 255);
+
+        cv::Mat black = saltpepperNoise < 20;
+        cv::Mat white = saltpepperNoise > 235;
+
+        img.setTo(255, white);
+        img.setTo(0, black);
     }
 }
