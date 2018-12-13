@@ -24,8 +24,8 @@ OBJS       = $(patsubst %.cpp, %.o, $(SOURCES))
 # Generated image has random Width and Height
 #CFLAGS    += -DRANDOM_W_H
 
-# Using cropped images with alpha channel
-CFLAGS    += -DIMG_CROPPED
+# Using transparent images with alpha channel
+CFLAGS    += -DIMG_TRANSPARENT
 
 # Selection of ROIs where signs are generated
 #CFLAGS    += -DROI_SELECTION
@@ -34,7 +34,7 @@ CFLAGS    += -DIMG_CROPPED
 CFLAGS    += -DGENERATOR_DEBUG
 
 # Blue traffic signs
-#CFLAGS    += -DBLUR
+CFLAGS    += -DBLUR
 
 # Rotate TS in Y axis
 CFLAGS    += -DROTATE_Y
