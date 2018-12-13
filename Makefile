@@ -60,6 +60,9 @@ CFLAGS    += -DGAUSSNOISE
 # Additive Salt and pepper noise
 CFLAGS    += -DPEPPERNOISE
 
+# The closer to middle of image TS is, the smaller is
+CFLAGS    += -DREALISTIC_SIZE
+
 ################## Compilation ##################
 
 all: $(BIN_NAME)

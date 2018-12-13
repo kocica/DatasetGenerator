@@ -115,7 +115,7 @@ namespace ImageProcessing
     {
         double ratio = r / 100.;
 
-#       ifdef ROI_SELECTION
+#       ifdef REALISTIC_SIZE
             // Resize image due to its position in background
             // ie. closer to the middle, smaller image will be
 
@@ -129,7 +129,7 @@ namespace ImageProcessing
                 ratio *= 0.5;
             }
 
-            cv::resize( m, m, cv::Size{ (int) (ratio * m.rows), (int) (ratio * m.cols) } );
+            cv::resize( m, m, cv::Size{ (int) (ratio * 100), (int) (ratio * 100) } );
 #       else
             // Resize image to approtimate size
 
