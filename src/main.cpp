@@ -51,7 +51,7 @@ int main(int argc, char **argv)
 	///////////////////////////////////////////////////////////////////////////////////////////////
 	// Load images & directories of classes
 
-	Utils::loadImages(pathToBackgrounds, bgs,  cv::IMREAD_COLOR);
+	Utils::loadImages("png", pathToBackgrounds, bgs,  cv::IMREAD_COLOR);
 	Utils::getDirectories(pathToImages, dirs);
 
 	///////////////////////////////////////////////////////////////////////////////////////////////
@@ -102,22 +102,28 @@ int main(int argc, char **argv)
 
 	for (auto& path : dirs)
 	{
+		i = 0;
 		imgs.clear();
 
 #		ifdef IMG_TRANSPARENT
-			Utils::loadImages(path, imgs, cv::IMREAD_UNCHANGED);  // With alpha-channel
+			Utils::loadImages("png", path, imgs, cv::IMREAD_UNCHANGED);  // With alpha-channel
 #		else
-			Utils::loadImages(path, imgs, cv::IMREAD_COLOR);      // Classification dataset TS
+			Utils::loadImages("ppm", path, imgs, cv::IMREAD_COLOR);      // Classification dataset TS
 #		endif
 
-		int nBackgrounds = bgs.size();
-		int nImages      = imgs.size();
+		size_t nBackgrounds = bgs.size();
+		size_t nImages      = imgs.size();
 
-		classID  = std::experimental::filesystem::path(path).filename();
+		if (nBackgrounds == 0 || nImages == 0)
+		{
+			std::cerr << "E: Failed to load images." << std::endl;
+			return 1; 
+		}
+
+		classID  = Utils::getClassID(path);
 		imgClass = Utils::getImgClass(path);
 
-		i = 0;
-		distI = PRNG::Uniform_t{0, imgs.size() - 1};
+		distI = PRNG::Uniform_t{0, nImages - 1};
 
 		///////////////////////////////////////////////////////////////////////////////////////////////
 		// Generate `nGenImgs` images for each of the TS classes

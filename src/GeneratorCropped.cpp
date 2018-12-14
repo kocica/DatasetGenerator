@@ -14,7 +14,7 @@
 DatasetGeneratorCropped_t::DatasetGeneratorCropped_t(std::ofstream& out, int imgClass)
     : DatasetGenerator_t{ out, imgClass }
 {
-	m_distSignSize = PRNG::Uniform_t{20, 60};
+	m_distSignSize = PRNG::Uniform_t{40, 100};
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////

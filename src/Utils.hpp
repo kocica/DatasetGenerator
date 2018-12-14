@@ -43,20 +43,32 @@ namespace Utils
      * @param [in] path Where are class directory & annotation file located
      * @return Class number
      */
-    auto getImgClass = [](const std::string& path) -> int
+    auto getImgClass = [&](const std::string& path) -> int
     {
         std::fstream fs { path + "/" + imgClassFn, std::ios_base::in };
         int ret; fs >> ret; return(ret);
     };
 
     /************************************************************************************
+     * @brief Directories are named by classes they represents, so extract name of dir
+     *
+     * @param [in] path Path to directory
+     * @return Class ID
+     */
+    auto getClassID = [&](const std::string& path) -> std::string
+    {
+        return (std::experimental::filesystem::path(path).filename());
+    };
+
+    /************************************************************************************
      * @brief From specified path (directory) loads all images to buffer
      * 
+     * @param [in] ext Extension of images
      * @param [in] path Directory
      * @param [out] imgs Buffer of loaded images
      * @param [in] mode Mode of imread
      */
-    void loadImages(const std::string& path, ImgBuffer& imgs, const int& mode);
+    void loadImages(const std::string& ext, const std::string& path, ImgBuffer& imgs, const int& mode);
 
     /************************************************************************************
      * @brief Arguments parser

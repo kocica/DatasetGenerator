@@ -25,10 +25,10 @@ OBJS       = $(patsubst %.cpp, %.o, $(SOURCES))
 #CFLAGS    += -DRANDOM_W_H
 
 # Using transparent images with alpha channel
-CFLAGS    += -DIMG_TRANSPARENT
+#CFLAGS    += -DIMG_TRANSPARENT
 
 # Selection of ROIs where signs are generated
-CFLAGS    += -DROI_SELECTION
+#CFLAGS    += -DROI_SELECTION
 
 # Debug info, show annotation bounding-boxes
 CFLAGS    += -DGENERATOR_DEBUG
@@ -61,7 +61,8 @@ CFLAGS    += -DGAUSSNOISE
 CFLAGS    += -DPEPPERNOISE
 
 # The closer to middle of image TS is, the smaller is
-CFLAGS    += -DREALISTIC_SIZE
+#CFLAGS    += -DREALISTIC_SIZE
+
 
 ################## Compilation ##################
 
@@ -73,13 +74,23 @@ $(BIN_NAME): $(HEADERS) $(SOURCES) $(OBJS)
 %.o: %.cpp
 	$(CC) $(CFLAGS) -c $< -o $@
 
-################## Pack/Clean ##################
+
+################## Pack/Clean/Run ##################
 
 .PHONY: clean
 
-
+# Clean compiled objects and binary
 clean:
 	rm -f $(BIN_NAME) $(SRC)/*.o
 
-run:
-	./$(BIN_NAME) ./../Backgrounds/ ./data/
+# Clean output folder (generated images & annotations)
+cleanout:
+	rm -rf out/*
+
+# Run transparent generator
+runt:
+	./$(BIN_NAME) data/backgrounds/ data/transparent
+
+# Run cropped generator
+runc:
+	./$(BIN_NAME) data/backgrounds/ data/cropped

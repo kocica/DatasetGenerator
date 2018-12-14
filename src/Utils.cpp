@@ -30,10 +30,10 @@ namespace Utils
     }
 
     ///////////////////////////////////////////////////////////////////////////////////////////////
-    void loadImages(const std::string& path, ImgBuffer& imgs, const int& mode)
+    void loadImages(const std::string& ext, const std::string& path, ImgBuffer& imgs, const int& mode)
     {
         std::vector<cv::String> strBuffer;
-        cv::glob(cv::String{path} + cv::String{"/*.png"}, strBuffer, false);
+        cv::glob(cv::String{path} + cv::String{"/*."} + cv::String{ext}, strBuffer, false);
 
         for (auto& it : strBuffer)
         {
