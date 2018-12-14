@@ -53,8 +53,9 @@ namespace ImageProcessing
 	 * @param [in] m image to be copied
 	 * @param [in] pos position in background to image be copied
 	 * @param [in] mid middle of background
+	 * @return Scale
 	 */
-	void resize(cv::Mat& m, int pos, int mid, int r);
+	double resize(cv::Mat& m, int pos, int mid, int r);
 
 	/************************************************************************************
 	 * @brief Copy image to specified location in background

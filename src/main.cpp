@@ -9,7 +9,10 @@
  */
 
 // Local
+#ifdef ROI_SELECTION
 #include "ROI.hpp"
+#endif
+
 #include "GeneratorTransparent.hpp"
 #include "GeneratorCropped.hpp"
 #include "Utils.hpp"
@@ -27,15 +30,23 @@ int main(int argc, char **argv)
 	int               ret        = 0;
 	int               w          = 0;
 	int               h          = 0;
+
+	size_t            randNum    = 0;
 	size_t            i          = 0;
 	constexpr size_t  nGenImgs   = 10;
 
-	std::string       pathToBackgrounds, pathToImages, backgroundName, imageName, csvName, classID;
+	std::string       pathToBackgrounds;
+	std::string       pathToImages;
+	std::string       classID;
 
 	Utils::ImgBuffer  bgs;
 	Utils::ImgBuffer  imgs;
 
 	Utils::StrBuffer  dirs;
+#	ifndef IMG_TRANSPARENT
+	Utils::StrBuffer  tsAnnotations;
+	Utils::StrBuffer  imgNames;
+#	endif
 
 	cv::Mat           bg;
 	cv::Mat           img;
@@ -89,10 +100,11 @@ int main(int argc, char **argv)
 	///////////////////////////////////////////////////////////////////////////////////////////////
 	// Regions of interest selection
 
-	ROIBuffer_t roiBuffer;
-
 #	ifdef ROI_SELECTION
-		cv::Mat exampleBg = cv::imread("data/roi-selection.png");
+		ROIBuffer_t roiBuffer;
+		cv::Mat     exampleBg;
+
+		exampleBg = cv::imread("data/roi-selection.png");
 		cv::resize(exampleBg, exampleBg, cv::Size{ w, h });
 		roiBuffer = getRegionsOfInterest(exampleBg);
 #	endif
@@ -104,11 +116,15 @@ int main(int argc, char **argv)
 	{
 		i = 0;
 		imgs.clear();
+#		ifndef IMG_TRANSPARENT
+		imgNames.clear();
+		tsAnnotations.clear();
+#		endif
 
 #		ifdef IMG_TRANSPARENT
-			Utils::loadImages("png", path, imgs, cv::IMREAD_UNCHANGED);  // With alpha-channel
+			Utils::loadImages("png", path, imgs, cv::IMREAD_UNCHANGED);       // With alpha-channel
 #		else
-			Utils::loadImages("ppm", path, imgs, cv::IMREAD_COLOR);      // Classification dataset TS
+			Utils::loadImages("ppm", path, imgs, imgNames, cv::IMREAD_COLOR); // Cropped classification TS dataset
 #		endif
 
 		size_t nBackgrounds = bgs.size();
@@ -122,6 +138,10 @@ int main(int argc, char **argv)
 
 		classID  = Utils::getClassID(path);
 		imgClass = Utils::getImgClass(path);
+
+#		ifndef IMG_TRANSPARENT
+			Utils::readAnnotations(path, tsAnnotations);
+#		endif
 
 		distI = PRNG::Uniform_t{0, nImages - 1};
 
@@ -139,7 +159,8 @@ int main(int argc, char **argv)
 #			ifdef IMG_TRANSPARENT
 				imgs.at(i).copyTo(img);
 #			else
-				imgs.at(distI(rng)).copyTo(img);
+				randNum = distI(rng);
+				imgs.at(randNum).copyTo(img);
 #			endif
 
 			// Create output annotation file passed to generator
@@ -152,10 +173,14 @@ int main(int argc, char **argv)
 #			ifdef IMG_TRANSPARENT
 				generator = new DatasetGeneratorTransparent_t{annotFile, imgClass};
 #			else
-				generator = new DatasetGeneratorCropped_t{annotFile, imgClass};
+				generator = new DatasetGeneratorCropped_t{annotFile, imgClass, tsAnnotations, imgNames.at(randNum)};
 #			endif
 
-			generator->generateDataset(roiBuffer, bg, img);
+#			ifdef ROI_SELECTION
+				generator->generateDataset(roiBuffer, bg, img);
+#			else
+				generator->generateDataset(bg, img);
+#			endif
 
 			// Save image
 			imwrite(Utils::outDir + classID + std::to_string(imgCounter) + Utils::imgExt, bg);

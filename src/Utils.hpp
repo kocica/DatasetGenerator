@@ -36,9 +36,10 @@ namespace Utils
     const std::string imgExt      = ".jpg";
     const std::string outDir      = "out/";
     const std::string imgClassFn  = "imgClass";
+    const std::string annotation  = "annotation.csv";
 
     /************************************************************************************
-     * @brief Read first number from annotation text file ie. number of the class
+     * @brief Functor to read first number from annotation text file ie. number of the class
      *
      * @param [in] path Where are class directory & annotation file located
      * @return Class number
@@ -50,7 +51,7 @@ namespace Utils
     };
 
     /************************************************************************************
-     * @brief Directories are named by classes they represents, so extract name of dir
+     * @brief Directories are named by classes they represents, so this functor extracts name of dir
      *
      * @param [in] path Path to directory
      * @return Class ID
@@ -71,15 +72,25 @@ namespace Utils
     void loadImages(const std::string& ext, const std::string& path, ImgBuffer& imgs, const int& mode);
 
     /************************************************************************************
+     * @brief Overload of function above, saving also names of images
+     * 
+     * @param [in] ext Extension of images
+     * @param [in] path Directory
+     * @param [out] imgs Buffer of loaded images
+     * @param [out] names Buffer of names of loaded images
+     * @param [in] mode Mode of imread
+     */
+    void loadImages(const std::string& ext, const std::string& path, ImgBuffer& imgs, StrBuffer& names, const int& mode);
+
+    /************************************************************************************
      * @brief Arguments parser
      * 
      * @param [in] argc Number of arguments
      * @param [in] argv Argument values
      * @param [out] pathBgs Directory with backgrounds
      * @param [out] pathImg Directory with images placed into bacgrounds
-     * @param [out] s Size of output images
      */
-    int parseArgs(int argc, char **argv, std::string& pathBgs, std::string& pathImgs/*, cv::Size& s*/);
+    int parseArgs(int argc, char **argv, std::string& pathBgs, std::string& pathImgs);
 
     /************************************************************************************
      * @brief Returns buffer of strings with all directories in path
@@ -88,6 +99,14 @@ namespace Utils
      * @param [out] strBuffer Buffer of strings with directories in path
      */
     void getDirectories(const std::string& path, StrBuffer& strBuffer);
+
+    /************************************************************************************
+     * @brief Returns buffer of strings with all annotations in annotation csv file
+     * 
+     * @param [in] path Path to annotation file
+     * @param [out] strBuffer Buffer of annotations
+     */
+    void readAnnotations(const std::string& path, StrBuffer& strBuffer);
 
     /************************************************************************************
      * @brief Prints program usage

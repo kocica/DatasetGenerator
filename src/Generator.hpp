@@ -23,6 +23,9 @@
 
 // Local
 #include "ImageProcessing.hpp"
+#ifdef ROI_SELECTION
+#include "ROI.hpp"
+#endif
 
 // OpenCV
 #include <opencv2/core/core.hpp>
@@ -47,7 +50,11 @@ public:
 	 * @param m [in] background
 	 * @param m2 [in] image to be copied to background
 	 */
-	virtual void generateDataset(const std::vector<std::pair<cv::Point, cv::Point>>& b, cv::Mat m, cv::Mat m2) = 0;
+#ifdef ROI_SELECTION
+	virtual void generateDataset(const ROIBuffer_t& b, cv::Mat m, cv::Mat m2) = 0;
+#else
+	virtual void generateDataset(cv::Mat m, cv::Mat m2) = 0;
+#endif
 
 protected:
 

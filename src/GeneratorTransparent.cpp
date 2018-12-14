@@ -146,7 +146,11 @@ void DatasetGeneratorTransparent_t::opSaltNPepperNoise(cv::Mat& m)
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
-void DatasetGeneratorTransparent_t::generateDataset(const std::vector<std::pair<cv::Point, cv::Point>>& b, cv::Mat m, cv::Mat m2)
+#ifdef ROI_SELECTION
+void DatasetGeneratorTransparent_t::generateDataset(const ROIBuffer_t& b, cv::Mat m, cv::Mat m2)
+#else
+void DatasetGeneratorTransparent_t::generateDataset(cv::Mat m, cv::Mat m2)
+#endif
 {
 	std::vector<cv::Mat> channels;
 	cv::Mat alpha;
@@ -161,21 +165,20 @@ void DatasetGeneratorTransparent_t::generateDataset(const std::vector<std::pair<
 	cv::cvtColor(m2, m2, cv::COLOR_BGRA2BGR);
 
 
+#ifdef DBG_NOISE
+	cv::Mat mx = m2.clone();
+	cv::Mat my = m2.clone();
 
-#ifdef dbg
-			cv::Mat mx = m2.clone();
-			cv::Mat my = m2.clone();
+	ImageProcessing::gaussianNoise(mx);
+	ImageProcessing::saltNPepperNoise(my);
 
-			ImageProcessing::gaussianNoise(mx);
-			ImageProcessing::saltNPepperNoise(my);
+	cv::imshow("1", m2);
+	cv::imshow("2", mx);
+	cv::imshow("3", my);
 
-			cv::imshow("1", m2);
-			cv::imshow("2", mx);
-			cv::imshow("3", my);
+	cv::waitKey(0);
 
-			cv::waitKey(0);
-
-			std::cout << m2.rows << " " << m2.cols << std::endl;
+	std::cout << m2.rows << " " << m2.cols << std::endl;
 #endif
 
 

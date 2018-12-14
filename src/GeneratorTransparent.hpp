@@ -32,7 +32,11 @@ public:
 	 * @param m [in] background
 	 * @param m2 [in] image to be copied to background
 	 */
-	void generateDataset(const std::vector<std::pair<cv::Point, cv::Point>>& b, cv::Mat m, cv::Mat m2) override;
+#ifdef ROI_SELECTION
+	virtual void generateDataset(const ROIBuffer_t& b, cv::Mat m, cv::Mat m2) override;
+#else
+	virtual void generateDataset(cv::Mat m, cv::Mat m2) override;
+#endif
 
 protected:
 

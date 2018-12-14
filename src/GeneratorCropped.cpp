@@ -11,19 +11,25 @@
 #include "GeneratorCropped.hpp"
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
-DatasetGeneratorCropped_t::DatasetGeneratorCropped_t(std::ofstream& out, int imgClass)
-    : DatasetGenerator_t{ out, imgClass }
+DatasetGeneratorCropped_t::DatasetGeneratorCropped_t(std::ofstream& out, int imgClass, const StrBuffer_t& tsAnnots, const std::string& classID)
+    : DatasetGenerator_t { out, imgClass }
+	, m_tsAnnotations    { tsAnnots }
+	, m_classID          { classID }
 {
 	m_distSignSize = PRNG::Uniform_t{40, 100};
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
-void DatasetGeneratorCropped_t::generateDataset(const std::vector<std::pair<cv::Point, cv::Point>>& b, cv::Mat m, cv::Mat m2)
+#ifdef ROI_SELECTION
+void DatasetGeneratorCropped_t::generateDataset(const ROIBuffer_t& b, cv::Mat m, cv::Mat m2)
+#else
+void DatasetGeneratorCropped_t::generateDataset(cv::Mat m, cv::Mat m2)
+#endif
 {
 	// Check whether image is not bigger than background
 	while (m2.rows > m.rows || m2.cols > m.cols)
 	{
-		cv::resize(m2, m2, cv::Size{m2.cols / 2, m2.rows / 2});
+		cv::resize(m2, m2, cv::Size{m2.cols / 10, m2.rows / 10});
 	}
 
 
@@ -54,28 +60,76 @@ void DatasetGeneratorCropped_t::generateDataset(const std::vector<std::pair<cv::
 
 
 	m_prngValue = m_distSignSize(m_rng);
-	ImageProcessing::resize(m2,     x, m.cols/2, m_prngValue);
-
+	//double scale = ImageProcessing::resize(m2, x, m.cols/2, m_prngValue);
+	double scale = 1.0;
 
 	// Adjust position of sign
 	adjustPosition(m, m2, x, y);
 
-
 	// Create annotation
+	Annotation_t annotation;
+	parseAnnotations(annotation);
+
 	cv::Rect roi;
-	roi.x      = m2.rows / 10;
-	roi.y      = m2.cols / 10;
-	roi.height = m2.rows - 2*(m2.rows / 10);
-	roi.width  = m2.cols - 2*(m2.cols / 10);
+	roi.x      = scale * annotation.rx1;
+	roi.y      = scale * annotation.ry1;
+	roi.width  = scale * (annotation.rx2 - annotation.rx1);
+	roi.height = scale * (annotation.ry2 - annotation.ry1);
 
 	cv::Mat tmp = m2(roi);
 
-	int x2 = x + m2.rows / 10;
-	int y2 = y + m2.cols / 10;
+	int x2 = x + scale * annotation.rx1;
+	int y2 = y + scale * annotation.ry1;
 
 	createAnnotation(m, tmp, x2, y2);
 
+	// Copy TS to background on specified position
 	ImageProcessing::copy2bgCropped(m, m2, x, y);
 
+	// DEBUG: Show bbox around TS
 	showBbox(m, tmp, x2, y2);
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////
+void DatasetGeneratorCropped_t::parseAnnotations(Annotation_t& annot) const
+{
+	try
+	{
+		for (auto& it : m_tsAnnotations)
+		{
+			StrBuffer_t elems;
+
+			splitAnnotation(it, ';', elems);
+
+			if (m_classID == elems.at(AnnotationFormat_t::NAME))
+			{
+				annot = {elems.at(AnnotationFormat_t::NAME),
+				         std::stoi(elems.at(AnnotationFormat_t::WIDTH)),
+						 std::stoi(elems.at(AnnotationFormat_t::HEIGHT)),
+						 std::stoi(elems.at(AnnotationFormat_t::RX1)),
+						 std::stoi(elems.at(AnnotationFormat_t::RY1)),
+						 std::stoi(elems.at(AnnotationFormat_t::RX2)),
+						 std::stoi(elems.at(AnnotationFormat_t::RY2)),
+						 elems.at(AnnotationFormat_t::CLASS)};
+				return;
+			}
+		}
+	}
+	catch (std::exception& e)
+	{
+		std::cerr << "Anntotaion has incorrect format. ("
+					+ std::string(e.what()) + ")" << std::endl;
+	}
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////
+void DatasetGeneratorCropped_t::splitAnnotation(const std::string& s, const char& delim, StrBuffer_t& elems) const
+{
+	std::stringstream ss(s);
+	std::string item;
+
+	while (std::getline(ss, item, delim))
+	{
+		elems.emplace_back(std::move(item));
+	}
 }

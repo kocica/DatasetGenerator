@@ -42,6 +42,19 @@ namespace Utils
     }
 
     ///////////////////////////////////////////////////////////////////////////////////////////////
+    void loadImages(const std::string& ext, const std::string& path, ImgBuffer& imgs, StrBuffer& names, const int& mode)
+    {
+        std::vector<cv::String> strBuffer;
+        cv::glob(cv::String{path} + cv::String{"/*."} + cv::String{ext}, strBuffer, false);
+
+        for (auto& it : strBuffer)
+        {
+            imgs.push_back(cv::imread(it, mode));
+            names.push_back(getClassID(it));
+        }
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////////////////////
     void getDirectories(const std::string& path, StrBuffer& strBuffer)
     {
         for (auto& p : std::experimental::filesystem::recursive_directory_iterator(path))
@@ -50,6 +63,18 @@ namespace Utils
             {
                 strBuffer.push_back(p.path().string());
             }
+        }
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////////////////////
+    void readAnnotations(const std::string& path, StrBuffer& strBuffer)
+    {
+        std::ifstream infile{path + "/" + annotation};
+        std::string line;
+
+        while (std::getline(infile, line))
+        {
+            strBuffer.emplace_back(std::move(line));
         }
     }
 

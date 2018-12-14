@@ -25,10 +25,10 @@ OBJS       = $(patsubst %.cpp, %.o, $(SOURCES))
 #CFLAGS    += -DRANDOM_W_H
 
 # Using transparent images with alpha channel
-#CFLAGS    += -DIMG_TRANSPARENT
+CFLAGS    += -DIMG_TRANSPARENT
 
 # Selection of ROIs where signs are generated
-#CFLAGS    += -DROI_SELECTION
+CFLAGS    += -DROI_SELECTION
 
 # Debug info, show annotation bounding-boxes
 CFLAGS    += -DGENERATOR_DEBUG

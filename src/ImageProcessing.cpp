@@ -111,9 +111,10 @@ namespace ImageProcessing
     }
 
     ///////////////////////////////////////////////////////////////////////////////////////////////
-    void resize(cv::Mat& m, int pos, int mid, int r)
+    double resize(cv::Mat& m, int pos, int mid, int r)
     {
         double ratio = r / 100.;
+        double rows = m.rows;
 
 #       ifdef REALISTIC_SIZE
             // Resize image due to its position in background
@@ -133,11 +134,13 @@ namespace ImageProcessing
 #       else
             // Resize image to approtimate size
 
-            // TODO !!!
+            // TODO: Replace magic constants !!!
             double diffSize = 407 / 309; //m.cols / (double) m.rows;
 
             cv::resize( m, m, cv::Size{ (int) (ratio * 50), (int) (ratio * diffSize * 50) } );
 #       endif
+
+        return (m.rows / rows);
     }
 
     ///////////////////////////////////////////////////////////////////////////////////////////////
