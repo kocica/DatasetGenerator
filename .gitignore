@@ -1,18 +1,17 @@
 # Bin name
 dataset-generator
 
-# Dataset folder
-img/*
-
 # Output
 out/*
 
 # vscode
 .vscode/*
 
-# Generated data
-dataset/*
+# Backgrounds
+data/backgrounds/*.png
 
+# Cropped data from german classification dataset
+data/cropped/*/*.ppm
 
 
 
