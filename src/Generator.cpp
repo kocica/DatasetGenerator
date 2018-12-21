@@ -58,7 +58,7 @@ void DatasetGenerator_t::createAnnotation(const cv::Mat& m, const cv::Mat& m2, c
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
-void DatasetGenerator_t::showBbox(const cv::Mat& m, const cv::Mat& m2, const int& x, const int& y)
+void DatasetGenerator_t::showBbox(cv::Mat& m, const cv::Mat& m2, const int& x, const int& y)
 {
 #	ifdef GENERATOR_DEBUG
 		int x2     = ((x + ((double) m2.cols / 2)) / m.cols) * m.cols - ((double) m2.cols / 2);
