@@ -8,7 +8,7 @@
 
 ################## Build constants ##############
 
-BIN_NAME   = dataset-generator
+BIN_NAME   = datagen
 
 DOC        = doc
 SRC        = src
