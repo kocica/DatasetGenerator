@@ -107,7 +107,23 @@ namespace ImageProcessing
     ///////////////////////////////////////////////////////////////////////////////////////////////
     void copy2bgCropped(cv::Mat& bg, cv::Mat& img, const int& x, const int& y)
     {
-        img.copyTo(bg(cv::Rect(x, y, img.cols, img.rows)));
+
+#       ifdef SEAMLESS_CLONE        
+            // Create an all white mask of traffic sign
+            cv::Mat imgMask = 255 * cv::Mat::ones(img.rows, img.cols, img.depth());
+
+            // The location of the center of the img in the bg
+            cv::Point center( x + img.cols/2, y + img.rows/2 );
+
+            // Seamlessly clone img into bg and put the results in output
+            cv::Mat clone = bg;
+
+            cv::seamlessClone(img, bg, imgMask, center, clone, cv::NORMAL_CLONE); /* MIXED_CLONE */
+            
+            bg = std::move(clone);
+#       else
+            img.copyTo(bg(cv::Rect(x, y, img.cols, img.rows)));
+#       endif
     }
 
     ///////////////////////////////////////////////////////////////////////////////////////////////

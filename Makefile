@@ -63,6 +63,9 @@ CFLAGS    += -DPEPPERNOISE
 # The closer to middle of image TS is, the smaller is
 #CFLAGS    += -DREALISTIC_SIZE
 
+# Seamless cloning of cropped signs to background
+CFLAGS    += -DSEAMLESS_CLONE
+
 
 ################## Compilation ##################
 
