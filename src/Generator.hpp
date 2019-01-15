@@ -87,7 +87,7 @@ protected:
 	 * @param [in] x coord
 	 * @param [in] y coord
 	 */
-	void showBbox(const cv::Mat& m, const cv::Mat& m2, const int& x, const int& y);
+	void showBbox(cv::Mat& m, const cv::Mat& m2, const int& x, const int& y);
 
 
 	/** @brief Probability 1-100 */
