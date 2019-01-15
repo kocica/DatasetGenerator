@@ -84,7 +84,7 @@ void DatasetGeneratorCropped_t::generateDataset(cv::Mat m, cv::Mat m2)
 	createAnnotation(m, tmp, x2, y2);
 
 	// Copy TS to background on specified position
-	ImageProcessing::copy2bgCropped(m, m2, x, y);
+	ImageProcessing::copy2bgCropped(m, m2, tmp, x, y, x2, y2);
 
 	// DEBUG: Show bbox around TS
 	showBbox(m, tmp, x2, y2);

@@ -77,7 +77,8 @@ namespace ImageProcessing
 	 * @param [in] x Position X
 	 * @param [in] y Position Y
 	 */
-	void copy2bgCropped(cv::Mat& bg, cv::Mat& img, const int& x, const int& y);
+	void copy2bgCropped(cv::Mat& bg, cv::Mat& img, cv::Mat& annot, const int& x, const int& y,
+						const int& x2, const int& y2, const bool& useMask = false);
 
 	/**** UNUSED ************************************************************************
 	 * @brief Rotate image in Y axis

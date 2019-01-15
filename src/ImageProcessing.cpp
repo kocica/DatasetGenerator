@@ -105,21 +105,62 @@ namespace ImageProcessing
     }
 
     ///////////////////////////////////////////////////////////////////////////////////////////////
-    void copy2bgCropped(cv::Mat& bg, cv::Mat& img, const int& x, const int& y)
+    void copy2bgCropped(cv::Mat& bg, cv::Mat& img, cv::Mat& annot, const int& x, const int& y,
+						const int& x2, const int& y2, const bool& useMask)
     {
-
 #       ifdef SEAMLESS_CLONE        
-            // Create an all white mask of traffic sign
-            cv::Mat imgMask = 255 * cv::Mat::ones(img.rows, img.cols, img.depth());
+
+            cv::Mat imgMask;
+
+            if (useMask)
+            {
+                imgMask = cv::Mat::zeros(img.rows, img.cols, img.depth());
+
+                const int diffx = x2 - x;
+                const int diffy = y2 - y;
+                const int sizex = annot.cols;
+                const int sizey = annot.rows;
+
+                ////////////// Method 1 ////////////// (More suitable for more than 4 points)
+                /*cv::Point poly[1][4];
+                poly[0][0] = cv::Point(diffx, diffy);
+                poly[0][1] = cv::Point(diffx + sizex, diffy);
+                poly[0][2] = cv::Point(diffx, diffy + sizey);
+                poly[0][3] = cv::Point(diffx + sizex, diffy + sizey);
+
+                const cv::Point* polygons[1] = { poly[0] };
+                int numPoints[] = { 4 };
+
+                cv::fillPoly(imgMask, polygons, numPoints, 1, cv::Scalar(255, 255, 255));*/
+
+                ////////////// Method 2 //////////////
+                /*for (int i = 0; i < imgMask.rows; i++)
+                {
+                    for (int j = 0; j < imgMask.cols; j++)
+                    {
+                        if (i > diffx && i < (diffx + sizex)
+                            && j > diffy && j < (diffy + sizey))
+                        {
+                            imgMask.at<cv::Vec3b>(i, j) = cv::Vec3b{ 255, 255, 255 };
+                        }
+                    }
+                }*/
+
+                ////////////// Method 3 ////////////// (Probably most optimized)
+                cv::rectangle(imgMask, cv::Point(diffx, diffy), cv::Point(diffx + sizex, diffy + sizey),
+                            cv::Scalar(255, 255, 255),  CV_FILLED);
+            }
+            else
+            {
+                imgMask = 255 * cv::Mat::ones(img.rows, img.cols, img.depth());
+            }
 
             // The location of the center of the img in the bg
             cv::Point center( x + img.cols/2, y + img.rows/2 );
 
             // Seamlessly clone img into bg and put the results in output
             cv::Mat clone = bg;
-
             cv::seamlessClone(img, bg, imgMask, center, clone, cv::NORMAL_CLONE); /* MIXED_CLONE */
-            
             bg = std::move(clone);
 #       else
             img.copyTo(bg(cv::Rect(x, y, img.cols, img.rows)));
@@ -188,6 +229,7 @@ namespace ImageProcessing
         cv::Mat newImage = cv::Mat::zeros( img.size(), img.type() );
 
         // Do the operation for each pixel: newImage(i,j) = alpha*img(i,j) + beta
+
         /*
         for( int y = 0; y < img.rows; y++ )
         {
@@ -248,9 +290,9 @@ namespace ImageProcessing
 
         uchar newHueRed;
         if ( probDist( rng ) <= 5 )  // 50%
-            newHueRed              = hueDistRedLow( rng );  //   0 -   9
+            newHueRed      = hueDistRedLow( rng );  //   0 -   9
         else                         // 50%
-            newHueRed              = hueDistRedHigh( rng ); // 177 - 180
+            newHueRed      = hueDistRedHigh( rng ); // 177 - 180
 
         uchar newHueBlue   = hueDistBlue( rng );
         uchar newHueYellow = hueDistYellow( rng );
