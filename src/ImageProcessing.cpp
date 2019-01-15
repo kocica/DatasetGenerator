@@ -309,7 +309,7 @@ namespace ImageProcessing
     void gaussianNoise(cv::Mat& img)
     {
         cv::Mat gaussNoise = img.clone();
-        cv::randn(gaussNoise, 20, 20);
+        cv::randn(gaussNoise, 1, 15);
 
         img = img + gaussNoise;
     }
@@ -320,8 +320,8 @@ namespace ImageProcessing
         cv::Mat saltpepperNoise = cv::Mat::zeros(img.rows, img.cols, CV_8U);
         randu(saltpepperNoise, 0, 255);
 
-        cv::Mat black = saltpepperNoise < 20;
-        cv::Mat white = saltpepperNoise > 235;
+        cv::Mat black = saltpepperNoise < 2;
+        cv::Mat white = saltpepperNoise > 253;
 
         img.setTo(255, white);
         img.setTo(0, black);

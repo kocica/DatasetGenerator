@@ -15,9 +15,9 @@ DatasetGeneratorTransparent_t::DatasetGeneratorTransparent_t(std::ofstream& out,
     : DatasetGenerator_t{ out, imgClass }
 {
 	m_dist5        = PRNG::Uniform_t{1, 5};
-	m_dist50       = PRNG::Uniform_t{0, 50};
-	m_distDiv      = PRNG::Uniform_t{10, 13};
-	m_distAlpha    = PRNG::Uniform_t{10, 10};
+	m_dist50       = PRNG::Uniform_t{0, 20};
+	m_distDiv      = PRNG::Uniform_t{10, 12};
+	m_distAlpha    = PRNG::Uniform_t{10, 15};
 	m_distBeta     = PRNG::Uniform_t{0, 30};
 	m_distGamma    = PRNG::Uniform_t{115, 195};
 	m_distSignSize = PRNG::Uniform_t{40, 100};
@@ -45,7 +45,7 @@ void DatasetGeneratorTransparent_t::opRotateZ(cv::Mat& m, cv::Mat& alpha)
 		m_prngProbability = m_probability(m_rng);
 		m_prngValue       = m_dist5(m_rng);
 
-		if (m_prngProbability <= 30) // 30%
+		if (m_prngProbability <= 20) // 20%
 		{
 			m_prngProbability = m_probability(m_rng);
 			m_prngValue       = m_prngProbability <= 50 ? m_prngValue : -m_prngValue;
@@ -63,7 +63,7 @@ void DatasetGeneratorTransparent_t::opRotateY(cv::Mat& m, cv::Mat& alpha)
 		m_prngProbability = m_probability(m_rng);
 		m_prngValue       = m_dist50(m_rng);
 
-		if (m_prngProbability <= 50) // 50%
+		if (m_prngProbability <= 20) // 20%
 		{
 			m_prngProbability = m_probability(m_rng);
 			m_prngValue       = m_prngProbability <= 50 ? m_prngValue : -m_prngValue;
