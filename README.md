@@ -1,4 +1,4 @@
-# Training Dataset Generator
+# Dataset Generator
 
 Usage: <bin_name> <path_2_backgrounds> <path_2_images><br>
 e.g. : ./dataset-generator data/backgrounds/ data/transparent<br>
