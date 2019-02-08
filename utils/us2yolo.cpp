@@ -67,7 +67,7 @@ int main(int argc, char **argv)
 	// Bad args
 	if (argc < 2)
 	{
-		std::cerr << "TODO: Usage" << std::endl;
+		std::cerr << "Usage <bin_name> <csv_annot>" << std::endl;
 		return 1;
 	}
 

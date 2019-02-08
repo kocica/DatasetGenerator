@@ -38,21 +38,16 @@ std::vector<std::string> split(const std::string &s, char delim)
 /*
 	CSV format:
 	-----------
-
-	Filename        - Image file the following information applies to
-	Roi.x1,Roi.y1,
-	Roi.x2,Roi.y2   - Location of the sign within the image
-			  		  (Images contain a border around the actual sign
-	                  of 10 percent of the sign size, at least 5 pixel)
-	ClassId         - The class of the traffic sign
+	0        1      2      3     4      5
+	filename,x_from,y_from,width,height,sign_class
 */
 enum AnnotationFormat
 {
 	NAME   = 0,
-	RX1    = 1,
-	RY1    = 2,
-	RX2    = 3,
-	RY2    = 4,
+	X      = 1,
+	Y      = 2,
+	W      = 3,
+	H      = 4,
 	CLASS  = 5
 };
     
@@ -75,29 +70,38 @@ int main(int argc, char **argv)
 	try
 	{
 	    // Skip header
-		//std::getline(infile, line);
+		// std::getline(infile, line);
+
 
 		// Loop over records
 		while (std::getline(infile, line))
 		{
 			// Parse comma-separated line
-			std::vector<std::string> vec = split(line, ';');
+			std::vector<std::string> vec = split(line, ',');
+
+			// Skip format info
+			if ( vec.at(NAME) == "filename" )
+			{
+				continue;
+			}
 
 			// Create annotation file
 			std::string annot = vec.at(NAME);
 			annot = annot.substr(0, annot.find_last_of('.')) + ".txt";
-			std::ofstream annotFile("annotation/" + annot);
+			std::ofstream annotFile;
+			annotFile.open("RTSD/detection/3/annotation/" + annot, std::ios_base::app);
 			
 			// Load annotated image
-			m = cv::imread(path + vec.at(NAME), cv::IMREAD_UNCHANGED);
+			m = cv::imread(path + vec.at(NAME));
+
+			imgW = m.cols;
+			imgH = m.rows;
 
 			// Calculate YOLO relative annotations
-			x     = (std::stoi(vec.at(RX1)) + std::stoi(vec.at(RX2))) / 2.0;
-			y     = (std::stoi(vec.at(RY1)) + std::stoi(vec.at(RY2))) / 2.0;
-			imgW  = std::stoi(vec.at(WIDTH));
-			imgH  = std::stoi(vec.at(HEIGHT));
-			signW = std::stoi(vec.at(RX2)) - std::stoi(vec.at(RX1));
-			signH = std::stoi(vec.at(RY2)) - std::stoi(vec.at(RY1));
+			x     = std::stoi(vec.at(X));
+			y     = std::stoi(vec.at(Y));
+			signW = std::stoi(vec.at(W));
+			signH = std::stoi(vec.at(H));
 
 			annotFile << vec.at(CLASS)  << " ";
 			annotFile << x     / imgW   << " ";
@@ -106,16 +110,18 @@ int main(int argc, char **argv)
 			annotFile << signH / imgH   << std::endl;
 
 
-			// Test
-			/*int x2 = x - (signW / 2);
-			int y2 = y - (signH / 2);
-			int size_x = signW;
-			int size_y = signH;
-			cv::Point pt {x2, y2};
-			cv::Point pt2{x2 + size_x, y2 + size_y};
+			// DEBUG
+			/*cv::Point pt { (int) x,           (int) y };
+			cv::Point pt2{ (int) (x + signW), (int) (y + signH) };
 
 			cv::rectangle(m, pt, pt2, cv::Scalar{0, 255, 0});
-			cv::imshow("1", m); cv::waitKey(0);*/
+			cv::imshow("1", m); cv::waitKey(0);
+
+			std::cout << vec.at(CLASS)  << " ";
+			std::cout << x     / imgW   << " ";
+			std::cout << y     / imgH   << " ";
+			std::cout << signW / imgW   << " ";
+			std::cout << signH / imgH   << std::endl;*/
 		}
 	}
 	catch (std::exception& e)

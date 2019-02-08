@@ -44,19 +44,11 @@ auto getImgClass = [&](const std::string& path) -> int
 /*
 	CSV format:
 	-----------
-
-	Filename        - Image file the following information applies to
-	Width, Height   - Dimensions of the image
-	Roi.x1,Roi.y1,
-	Roi.x2,Roi.y2   - Location of the sign within the image
-			  		  (Images contain a border around the actual sign
-	                  of 10 percent of the sign size, at least 5 pixel)
-	ClassId         - The class of the traffic sign
+    0        1     2      3      4      5      6      7
+	Filename;Width;Height;Roi.X1;Roi.Y1;Roi.X2;Roi.Y2;ClassId
 */
 enum AnnotationFormat
 {
-	//Filename;Width;Height;Roi.X1;Roi.Y1;Roi.X2;Roi.Y2;ClassId
-
 	NAME   = 0,
 	WIDTH  = 1,
 	HEIGHT = 2,
