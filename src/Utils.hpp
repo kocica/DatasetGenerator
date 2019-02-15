@@ -112,4 +112,18 @@ namespace Utils
      * @brief Prints program usage
      */
     void printUsage();
+
+    /************************************************************************************
+     * @brief Swap values of params
+     *
+     * @param [in,out] Value to be swapped
+     * @param [in,out] Value to be swapped
+     */
+    template<typename T>
+    inline void swap(T& first, T& second)
+    {
+        T tmp  = first;
+        first  = second;
+        second = tmp;
+    }
 }

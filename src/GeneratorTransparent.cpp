@@ -15,12 +15,13 @@ DatasetGeneratorTransparent_t::DatasetGeneratorTransparent_t(std::ofstream& out,
     : DatasetGenerator_t{ out, imgClass }
 {
 	m_dist5        = PRNG::Uniform_t{1, 5};
-	m_dist50       = PRNG::Uniform_t{0, 20};
+	m_dist50       = PRNG::Uniform_t{0, 40};
+	m_distGradient = PRNG::Uniform_t{0, 180};
 	m_distDiv      = PRNG::Uniform_t{10, 12};
 	m_distAlpha    = PRNG::Uniform_t{10, 15};
 	m_distBeta     = PRNG::Uniform_t{0, 30};
 	m_distGamma    = PRNG::Uniform_t{115, 195};
-	m_distSignSize = PRNG::Uniform_t{40, 100};
+	m_distSignSize = PRNG::Uniform_t{40, 170};
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
@@ -112,7 +113,7 @@ void DatasetGeneratorTransparent_t::opGammaCorrection(cv::Mat& m)
 #	ifdef GAMMACORRECT
 		m_prngProbability = m_probability(m_rng);
 
-		if ( m_prngProbability <= 50 ) // 50%
+		if ( m_prngProbability <= 25 ) // 25%
 		{
 			ImageProcessing::gammaCorrection( m, m_distGamma( m_rng ) / 100.0 );
 		}
@@ -142,6 +143,59 @@ void DatasetGeneratorTransparent_t::opSaltNPepperNoise(cv::Mat& m)
 		{
 			ImageProcessing::saltNPepperNoise( m );
 		}
+#	endif
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////
+void DatasetGeneratorTransparent_t::opAddGradient(cv::Mat& m)
+{
+#	ifdef GRADIENT
+		m_prngProbability = m_probability(m_rng);
+
+		if ( m_prngProbability <= 40 ) // 40%
+		{
+			// Do the operation for each pixel: newImage(i,j) = alpha*img(i,j) + beta
+
+			double alpha = .1;
+			double beta  = .0;
+			double deltaAlpha = 2.5 / m.rows;
+			double deltaBeta  = 100 / m.rows;
+			int dir = m_distGradient(m_rng);
+			dir = ( m_probability(m_rng) < 50 ) ? dir : - dir;
+
+
+			cv::Mat tmp = cv::Mat::zeros(cv::Size(2*m.rows, 2*m.cols), m.type());
+			int x_coord = m.cols / 2;
+			int y_coord = m.rows / 2;
+
+			m.copyTo(tmp(cv::Rect(x_coord, y_coord, m.rows, m.cols)));
+			
+			ImageProcessing::rotateImage(tmp, tmp, 90, 90, 90 + dir, 0, 0, 200, 200);
+
+			cv::Mat newImage;
+			tmp.copyTo(newImage);
+
+			for( int y = 0; y < tmp.rows; y++ )
+			{
+				for( int x = 0; x < tmp.cols; x++ )
+				{
+					for( int c = 0; c < 3; c++ )
+					{
+						newImage.at<cv::Vec3b>(y, x)[c] = cv::saturate_cast<uchar>( alpha * ( tmp.at<cv::Vec3b>(y, x)[c] ) + beta );
+					}
+				}
+
+				if ( y > y_coord && y < (y_coord + m.cols) )
+				{
+					alpha += deltaAlpha;
+					beta  += deltaBeta;
+				}
+			}
+
+			ImageProcessing::rotateImage(newImage, newImage, 90, 90, 90 - dir, 0, 0, 200, 200);
+
+			m = newImage(cv::Rect(x_coord, y_coord, m.rows, m.cols));
+    	}
 #	endif
 }
 
@@ -238,6 +292,9 @@ void DatasetGeneratorTransparent_t::generateDataset(cv::Mat m, cv::Mat m2)
 	// TODO: Maybe add noise before TS is resized ?
 	opGaussianNoise(m2);
 	opSaltNPepperNoise(m2);
+
+	// Random gradient
+	opAddGradient(m2);
 
 	/////////////////////// CREATE IMG & ANNOTATION ///////////////////////
 

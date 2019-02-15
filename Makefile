@@ -34,7 +34,7 @@ CFLAGS    += -DIMG_TRANSPARENT
 #CFLAGS    += -DGENERATOR_DEBUG
 
 # Blue traffic signs
-CFLAGS    += -DBLUR
+#CFLAGS    += -DBLUR
 
 # Rotate TS in Y axis
 CFLAGS    += -DROTATE_Y
@@ -51,20 +51,23 @@ CFLAGS    += -DGAMMACORRECT
 # Modify hue of inserted signs
 CFLAGS    += -DHUE
 
-# Create annotation file for each generated image
-CFLAGS    += -DANNOTATION
-
 # Additive Gaussian noise
 CFLAGS    += -DGAUSSNOISE
 
 # Additive Salt and pepper noise
 CFLAGS    += -DPEPPERNOISE
 
+# Traffic sign brightness gradient
+CFLAGS    += -DGRADIENT
+
 # The closer to middle of image TS is, the smaller is
 #CFLAGS    += -DREALISTIC_SIZE
 
 # Seamless cloning of cropped signs to background
 CFLAGS    += -DSEAMLESS_CLONE
+
+# Create annotation file for each generated image
+CFLAGS    += -DANNOTATION
 
 
 ################## Compilation ##################

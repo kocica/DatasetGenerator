@@ -84,8 +84,26 @@ protected:
 	 */
 	void opGammaCorrection(cv::Mat& m);
 
+	/************************************************************************************
+	 * @brief Add gaussian noise to the traffic sign
+	 *
+	 * @param m [in, out] Modified image
+	 */
     void opGaussianNoise(cv::Mat& m);
+
+	/************************************************************************************
+	 * @brief Add salt and pepper (blue and white pixels) noise to the traffic sign
+	 *
+	 * @param m [in, out] Modified image
+	 */
     void opSaltNPepperNoise(cv::Mat& m);
+
+	/************************************************************************************
+	 * @brief Add gradient to the traffic sign
+	 *
+	 * @param m [in, out] Modified image
+	 */
+    void opAddGradient(cv::Mat& m);
 
 private:
 
@@ -93,6 +111,8 @@ private:
 	PRNG::Uniform_t m_dist5;
 	/** @brief 0-50  Pseudo-random uniform distribution */
 	PRNG::Uniform_t m_dist50;
+	/** @brief Pseudo-random uniform distribution for gradient intensity and direction */
+	PRNG::Uniform_t m_distGradient;
 	/** @brief Pseudo-random uniform distribution for brightness & contrast modification */
 	PRNG::Uniform_t m_distAlpha;
 	/** @brief Pseudo-random uniform distribution for brightness & contrast modification */
