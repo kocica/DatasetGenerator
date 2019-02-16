@@ -60,6 +60,9 @@ CFLAGS    += -DPEPPERNOISE
 # Traffic sign brightness gradient
 CFLAGS    += -DGRADIENT
 
+# Modify luminescence of the traffic sign according to brightness in the image
+CFLAGS    += -DREALISTIC_LIGHTNING
+
 # The closer to middle of image TS is, the smaller is
 #CFLAGS    += -DREALISTIC_SIZE
 

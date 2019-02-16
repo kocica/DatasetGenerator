@@ -74,8 +74,13 @@ protected:
 	 * @brief Modifies brightness of image according to uniform probability
 	 *
 	 * @param m [in, out] Modified image
+	 * @param factor [in] Lightning factor (just in case REALISTIC_LIGHTNING is defined)
 	 */
+#   ifdef REALISTIC_LIGHTNING
+	void opAdjustBrightness(cv::Mat& m, double factor);
+#   else
 	void opAdjustBrightness(cv::Mat& m);
+#   endif
 
 	/************************************************************************************
 	 * @brief Corrects gamma of image according to uniform probability

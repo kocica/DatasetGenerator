@@ -89,21 +89,35 @@ void DatasetGeneratorTransparent_t::opAdjustHue(cv::Mat& m)
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
+#ifdef REALISTIC_LIGHTNING
+void DatasetGeneratorTransparent_t::opAdjustBrightness(cv::Mat& m, double factor)
+#else
 void DatasetGeneratorTransparent_t::opAdjustBrightness(cv::Mat& m)
+#endif
 {
 #	ifdef BIGHTCONTRAST
 		m_prngProbability = m_probability(m_rng);
+		double alpha  = m_distAlpha( m_rng ) / 10.0;
+		double beta   = m_distBeta( m_rng );
+		double divide = m_distDiv(m_rng) / 10.0;
 
-		if ( m_prngProbability <= 20 ) // 20%
+#       ifdef REALISTIC_LIGHTNING
+			factor  = factor > 1.0 ? 1.0 : factor;
+			factor  = factor < 0.2 ? 0.2 : factor;
+			alpha  *= factor;
+			beta   *= factor;
+#       endif
+
+		if ( m_prngProbability <= 80 ) // 80%
 		{
-			ImageProcessing::modifyLuminescence( m, m_distAlpha( m_rng ) / 10., m_distBeta( m_rng ) );
+			ImageProcessing::modifyLuminescence( m, alpha , beta );
 		}
-		else if ( m_prngProbability <= 40 ) // 20%
+		/*else if ( m_prngProbability <= 20 ) // 20%
 		{
 			m.convertTo(m, CV_32FC3);                // Convert to floating point, 3 channels
-			cv::divide(m, m_distDiv(m_rng) / 10, m); // Divide (decrease brightness & contrast)
+			cv::divide(m, divide, m);                // Divide (decrease brightness & contrast)
 			m.convertTo(m, CV_8UC3);                 // Convert back to unsigned integer, 3 channels
-		}
+		}*/
 #	endif
 }
 
@@ -283,13 +297,16 @@ void DatasetGeneratorTransparent_t::generateDataset(cv::Mat m, cv::Mat m2)
 	opAdjustHue(m2);
 
 	// Brightness & contrast adjustment
+#   ifdef REALISTIC_LIGHTNING
+	opAdjustBrightness(m2, ImageProcessing::getImgBrightness( m(cv::Rect{x, y, m2.rows, m2.cols}) ));
+#	else
 	opAdjustBrightness(m2);
+#	endif
 
 	// Gamma correction
 	opGammaCorrection(m2);
 
 	// P-Random noise
-	// TODO: Maybe add noise before TS is resized ?
 	opGaussianNoise(m2);
 	opSaltNPepperNoise(m2);
 
