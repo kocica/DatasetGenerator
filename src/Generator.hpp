@@ -64,10 +64,11 @@ protected:
 	 *
 	 * @param m [in] m Background
 	 * @param m2 [in] m2 Generated sign
+	 * @param a [in] TS alpha channel matrix
 	 * @param x [in, out] Position of generated sign in background
 	 * @param y [in, out] Position of generated sign in background
 	 */
-	void adjustPosition(const cv::Mat& m, const cv::Mat& m2, int& x, int& y);
+	void adjustPosition(const cv::Mat& m, cv::Mat& m2, cv::Mat& a, int& x, int& y);
 
 	/************************************************************************************
 	 * @brief Create annotation file with same name as result image

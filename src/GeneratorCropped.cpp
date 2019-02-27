@@ -64,7 +64,12 @@ void DatasetGeneratorCropped_t::generateDataset(cv::Mat m, cv::Mat m2)
 	double scale = 1.0;
 
 	// Adjust position of sign
-	adjustPosition(m, m2, x, y);
+	cv::Mat a;
+#ifdef PARTIAL_TS
+	int prev_w = m2.cols;
+	int prev_h = m2.rows;
+#endif
+	adjustPosition(m, m2, a, x, y);
 
 	// Create annotation
 	Annotation_t annotation;
@@ -75,6 +80,18 @@ void DatasetGeneratorCropped_t::generateDataset(cv::Mat m, cv::Mat m2)
 	roi.y      = scale * annotation.ry1;
 	roi.width  = scale * (annotation.rx2 - annotation.rx1);
 	roi.height = scale * (annotation.ry2 - annotation.ry1);
+
+	// Cropped because of partial TS
+#ifdef PARTIAL_TS
+	if ( prev_w != m2.cols )
+	{
+		roi.width = m2.cols - roi.x;
+	}
+	else if ( prev_h != m2.rows )
+	{
+		roi.height = m2.rows - roi.y;
+	}
+#endif
 
 	cv::Mat tmp = m2(roi);
 

@@ -33,7 +33,7 @@ int main(int argc, char **argv)
 
 	size_t            randNum    = 0;
 	size_t            i          = 0;
-	constexpr size_t  nGenImgs   = 200;
+	constexpr size_t  nGenImgs   = 10;
 
 	std::string       pathToBackgrounds;
 	std::string       pathToImages;

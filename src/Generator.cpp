@@ -24,21 +24,42 @@ DatasetGenerator_t::DatasetGenerator_t(std::ofstream& out, int imgClass)
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
-void DatasetGenerator_t::adjustPosition(const cv::Mat& m, const cv::Mat& m2, int& x, int& y)
+void DatasetGenerator_t::adjustPosition(const cv::Mat& m, cv::Mat& m2, cv::Mat& a, int& x, int& y)
 {
-	// If the sign is outside of bounds
-	if ( ! (((x + m2.cols) <= m.cols) && ((y + m2.rows) <= m.rows)) )
+	// If the sign is outside of background image bounds
+	if ( ((x + m2.cols) >= m.cols) || ((y + m2.rows) >= m.rows) )
 	{
-		// Shift image left
-		if ((x + m2.cols) > m.cols)
+#ifdef  PARTIAL_TS
+		int overlap_X = (m.cols - x) > m2.cols ? m2.cols : m.cols - x;
+		int overlap_Y = (m.rows - y) > m2.rows ? m2.rows : m.rows - y;
+
+		if ( ( overlap_X < (m2.cols / 2) || overlap_Y < (m2.rows / 2) ) && m_probability( m_rng ) >= 10 ) // 90%
 		{
-			x -= (x + m2.cols) - m.cols;
+#endif
+			// Shift image left
+			if ((x + m2.cols) > m.cols)
+			{
+				x -= (x + m2.cols) - m.cols;
+			}
+			// Shift image up
+			if ((y + m2.rows) > m.rows)
+			{
+				y -= (y + m2.rows) - m.rows;
+			}
+#ifdef  PARTIAL_TS
 		}
-		// Shift image up
-		if ((y + m2.rows) > m.rows)
+		else // 10%
 		{
-			y -= (y + m2.rows) - m.rows;
+			// Crop just part of the sign
+			m2 = m2( cv::Rect{ 0, 0, overlap_X, overlap_Y } );
+
+			// In case of transparent TSs crop also alpha channel
+			if ( ! a.empty() )
+			{
+				a = a( cv::Rect{ 0, 0, overlap_X, overlap_Y } );
+			}
 		}
+#endif
 	}
 }
 

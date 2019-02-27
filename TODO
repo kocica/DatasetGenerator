@@ -1,17 +1,18 @@
 Cropped:
 ========
 
-- Seamless cloning
+- Seamless cloning (done)
 
 
 Transparent:
 ============
 
-- Gradient
+- Gradient (done)
 - Homography
 
 
 Both:
 =====
 
-https://docs.opencv.org/3.0-beta/modules/photo/doc/cloning.html
+- Adjust brightness of the TS according to the lightning in the ROI (done)
+https://docs.opencv.org/3.0-beta/modules/photo/doc/cloning.html (done)

@@ -166,29 +166,26 @@ void DatasetGeneratorTransparent_t::opAddGradient(cv::Mat& m)
 #	ifdef GRADIENT
 		m_prngProbability = m_probability(m_rng);
 
-		if ( m_prngProbability <= 40 ) // 40%
+		if ( m_prngProbability <= 25 ) // 25%
 		{
-			// Do the operation for each pixel: newImage(i,j) = alpha*img(i,j) + beta
+			double alpha = .7;
+			double beta  = 10;
+			double deltaAlpha = 1.3 / m.rows;
+			double deltaBeta  = 80  / m.rows;
+			int dir = ( m_probability(m_rng) < 50 ) ? m_distGradient(m_rng) : - m_distGradient(m_rng);
 
-			double alpha = .1;
-			double beta  = .0;
-			double deltaAlpha = 2.5 / m.rows;
-			double deltaBeta  = 100 / m.rows;
-			int dir = m_distGradient(m_rng);
-			dir = ( m_probability(m_rng) < 50 ) ? dir : - dir;
-
-
-			cv::Mat tmp = cv::Mat::zeros(cv::Size(2*m.rows, 2*m.cols), m.type());
+			cv::Mat tmp = cv::Mat::zeros(cv::Size(2*m.cols, 2*m.rows), m.type());
 			int x_coord = m.cols / 2;
 			int y_coord = m.rows / 2;
 
-			m.copyTo(tmp(cv::Rect(x_coord, y_coord, m.rows, m.cols)));
+			m.copyTo(tmp(cv::Rect(x_coord, y_coord, m.cols, m.rows)));
 			
 			ImageProcessing::rotateImage(tmp, tmp, 90, 90, 90 + dir, 0, 0, 200, 200);
 
 			cv::Mat newImage;
 			tmp.copyTo(newImage);
 
+			// Do the operation for each pixel: newImage(i,j) = alpha*img(i,j) + beta
 			for( int y = 0; y < tmp.rows; y++ )
 			{
 				for( int x = 0; x < tmp.cols; x++ )
@@ -208,7 +205,7 @@ void DatasetGeneratorTransparent_t::opAddGradient(cv::Mat& m)
 
 			ImageProcessing::rotateImage(newImage, newImage, 90, 90, 90 - dir, 0, 0, 200, 200);
 
-			m = newImage(cv::Rect(x_coord, y_coord, m.rows, m.cols));
+			m = newImage(cv::Rect(x_coord, y_coord, m.cols, m.rows));
     	}
 #	endif
 }
@@ -231,24 +228,6 @@ void DatasetGeneratorTransparent_t::generateDataset(cv::Mat m, cv::Mat m2)
 
 	// Convert transparent image (4 channels) to BGR (3 channels) img
 	cv::cvtColor(m2, m2, cv::COLOR_BGRA2BGR);
-
-
-#ifdef DBG_NOISE
-	cv::Mat mx = m2.clone();
-	cv::Mat my = m2.clone();
-
-	ImageProcessing::gaussianNoise(mx);
-	ImageProcessing::saltNPepperNoise(my);
-
-	cv::imshow("1", m2);
-	cv::imshow("2", mx);
-	cv::imshow("3", my);
-
-	cv::waitKey(0);
-
-	std::cout << m2.rows << " " << m2.cols << std::endl;
-#endif
-
 
 	// Select random bounding box or use whole image
 #	ifdef ROI_SELECTION
@@ -280,7 +259,7 @@ void DatasetGeneratorTransparent_t::generateDataset(cv::Mat m, cv::Mat m2)
 	ImageProcessing::resize(alpha,  x, m.cols/2, m_prngValue);
 
 	// Adjust position of sign
-	adjustPosition(m, m2, x, y);
+	adjustPosition(m, m2, alpha, x, y);
 
 	/////////////////////// OPERATIONS ///////////////////////
 
@@ -298,7 +277,7 @@ void DatasetGeneratorTransparent_t::generateDataset(cv::Mat m, cv::Mat m2)
 
 	// Brightness & contrast adjustment
 #   ifdef REALISTIC_LIGHTNING
-	opAdjustBrightness(m2, ImageProcessing::getImgBrightness( m(cv::Rect{x, y, m2.rows, m2.cols}) ));
+	opAdjustBrightness(m2, ImageProcessing::getImgBrightness( m(cv::Rect{x, y, m2.cols, m2.rows}) ));
 #	else
 	opAdjustBrightness(m2);
 #	endif

@@ -63,6 +63,9 @@ CFLAGS    += -DGRADIENT
 # Modify luminescence of the traffic sign according to brightness in the image
 CFLAGS    += -DREALISTIC_LIGHTNING
 
+# Add partial traffic sign to dataset
+CFLAGS    += -DPARTIAL_TS
+
 # The closer to middle of image TS is, the smaller is
 #CFLAGS    += -DREALISTIC_SIZE
 
