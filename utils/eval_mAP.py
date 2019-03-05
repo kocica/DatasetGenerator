@@ -5,6 +5,7 @@ import shutil
 import operator
 import sys
 import argparse
+from sklearn.metrics import roc_curve, auc
 
 MINOVERLAP = 0.5 # default value (defined in the PASCAL VOC2012 challenge)
 
@@ -99,6 +100,9 @@ def voc_ap(rec, prec):
   prec.insert(0, 0.0) # insert 0.0 at begining of list
   prec.append(0.0) # insert 0.0 at end of list
   mpre = prec[:]
+  fpr.insert(0, 0.0) # insert 0.0 at begining of list
+  fpr.append(0.0) # insert 0.0 at end of list
+
   """
    This part makes the precision monotonically decreasing
     (goes from the end to the beginning)
@@ -201,7 +205,7 @@ def draw_plot_func(dictionary, n_classes, window_title, plot_title, x_label, out
     plt.barh(range(n_classes), missing,   align='center', color='black', label='Not detected', left=space)
 
     # add legend
-    plt.legend(loc='lower left')
+    plt.legend(loc='lower right')
     """
      Write number on side of bar
     """
@@ -598,6 +602,13 @@ with open(results_files_path + "/results.txt", 'w') as results_file:
     for idx, val in enumerate(tp):
       prec[idx] = float(tp[idx]) / (fp[idx] + tp[idx])
     #print(prec)
+    fpr = tp[:]
+    for idx, val in enumerate(tp):
+    	if (fp[idx] + (gt_counter_per_class[class_name] - tp[idx])) != 0:
+          fpr[idx] = float(fp[idx]) / (fp[idx] + (gt_counter_per_class[class_name] - tp[idx]))
+        else:
+          fpr[idx] = 0.0
+    #print(fpr)
 
     ap, mrec, mprec = voc_ap(rec, prec)
     sum_AP += ap
@@ -607,7 +618,20 @@ with open(results_files_path + "/results.txt", 'w') as results_file:
     """
     rounded_prec = [ '%.2f' % elem for elem in prec ]
     rounded_rec = [ '%.2f' % elem for elem in rec ]
-    results_file.write(text + "\n Precision: " + str(rounded_prec) + "\n Recall   :" + str(rounded_rec) + "\n\n")
+    rounded_fpr = [ '%.2f' % elem for elem in fpr ]
+    results_file.write(text + "\n Precision: " + str(rounded_prec) + "\n Recall   :" + str(rounded_rec) + "\n FPR      :" + str(rounded_fpr) + "\n\n")
+
+    fpr[-1] = 1.0
+    #print(' '.join(str(x) for x in fpr))
+
+    res_auc = auc(fpr, rec)
+
+    if res_auc != 0.50:
+      plt.style.use('seaborn')
+      plt.plot(fpr, rec,
+             label='ROC curve of the class {0} (AUC = {1:0.2f})'
+             ''.format(class_name, auc(fpr, rec)))
+
     if not args.quiet:
       print(text)
     ap_dictionary[class_name] = ap
@@ -615,7 +639,7 @@ with open(results_files_path + "/results.txt", 'w') as results_file:
     """
      Draw plot
     """
-    if draw_plot:
+    if draw_plot == 42:
       plt.plot(rec, prec, '-o')
       # add a new penultimate point to the list (mrec[-2], 0.0)
       # since the last line segment (and respective area) do not affect the AP value
@@ -645,6 +669,17 @@ with open(results_files_path + "/results.txt", 'w') as results_file:
 
   if show_animation:
     cv2.destroyAllWindows()
+
+  plt.title('Receiver Operating Characteristic')
+  plt.legend(loc = 'lower right')
+  plt.plot([0, 1], [0, 1],'r--')
+  plt.xlim([0, 1])
+  plt.ylim([0, 1])
+  plt.ylabel('True Positive Rate')
+  plt.xlabel('False Positive Rate')
+  plt.savefig(results_files_path + "/ROC.png")
+  #plt.show()
+  plt.cla()
 
   results_file.write("\n# mAP of all classes\n")
   mAP = sum_AP / n_classes
