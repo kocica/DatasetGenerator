@@ -5,6 +5,8 @@ import shutil
 import operator
 import sys
 import argparse
+import numpy as np
+from scipy import interp
 from sklearn.metrics import roc_curve, auc
 
 MINOVERLAP = 0.5 # default value (defined in the PASCAL VOC2012 challenge)
@@ -430,6 +432,10 @@ for class_index, class_name in enumerate(gt_classes):
 """
 sum_AP = 0.0
 ap_dictionary = {}
+mean_fpr = np.linspace(0, 1, 100)
+tprs = []
+aucs = []
+
 # open file to store the results
 with open(results_files_path + "/results.txt", 'w') as results_file:
   results_file.write("# AP and precision/recall per class\n")
@@ -630,7 +636,10 @@ with open(results_files_path + "/results.txt", 'w') as results_file:
       plt.style.use('seaborn')
       plt.plot(fpr, rec,
              label='ROC curve of the class {0} (AUC = {1:0.2f})'
-             ''.format(class_name, auc(fpr, rec)))
+             ''.format(class_name, res_auc), alpha=0.5)
+      tprs.append(interp(mean_fpr, fpr, rec))
+      tprs[-1][0] = 0.0
+      aucs.append(res_auc)
 
     if not args.quiet:
       print(text)
@@ -671,14 +680,21 @@ with open(results_files_path + "/results.txt", 'w') as results_file:
     cv2.destroyAllWindows()
 
   plt.title('Receiver Operating Characteristic')
-  plt.legend(loc = 'lower right')
   plt.plot([0, 1], [0, 1],'r--')
   plt.xlim([0, 1])
   plt.ylim([0, 1])
   plt.ylabel('True Positive Rate')
   plt.xlabel('False Positive Rate')
   plt.savefig(results_files_path + "/ROC.png")
+
+  mean_tpr = np.mean(tprs, axis=0)
+  mean_tpr[-1] = 1.0
+  mean_auc = auc(mean_fpr, mean_tpr)
+  plt.plot(mean_fpr, mean_tpr, color='k',
+         label='Mean ROC (AUC = {0:0.2f})'.format(mean_auc))
+  plt.legend(loc = 'lower right')
   #plt.show()
+  plt.savefig(results_files_path + "/ROC.png")
   plt.cla()
 
   results_file.write("\n# mAP of all classes\n")
