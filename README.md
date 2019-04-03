@@ -13,21 +13,26 @@ Tool works on simple principle of placing objects to the images of background on
 ### 1) Using many cropped objects
 Cropped objects (used for classifier training) are placed to the images of background using Poisson blending [1].
 
-<br><b>Cropped traffic sign placed to the background with and without (right) Poisson blending</b>:<br>
-<img src="data/visual/cropped_1.png" alt="Cropped without poisson blending" width="204" height="155">
-<img src="data/visual/cropped_2.png" alt="Cropped with poisson blending" width="204" height="155">
+<b>Cropped traffic sign placed to the background with and without (right) Poisson blending</b>:<br>
+<p align="center">
+  <img src="data/visual/cropped_1.png" alt="Cropped without poisson blending" width="204" height="155">
+  <img src="data/visual/cropped_2.png" alt="Cropped with poisson blending" width="204" height="155">
+</p>
 
 ### 2) Using few transparent objects
 
 Before transparent objects are placed into background, few effects are applied to synthetically modify appearance of the object.
 
-<br><b>All effects applied on the traffic sign separately (original in the top left corner)</b>:<br>
-![alt text](data/visual/effects.png "Effects")
+<b>All effects applied on the traffic sign separately (original in the top left corner)</b>:<br>
+<p align="center">
+  <img src="data/visual/effects.png" alt="Effects">
+</p>
 
-<br><b>Then objects are placed into background</b>:<br>
-
-<img src="data/visual/synt_1.png" alt="Transparent" width="204" height="155">
-<img src="data/visual/synt_2.jpg" alt="Transparent" width="204" height="155">
+<b>Then objects are placed into background</b>:<br>
+<p align="center">
+  <img src="data/visual/synt_1.png" alt="Transparent" width="204" height="155">
+  <img src="data/visual/synt_2.jpg" alt="Transparent" width="204" height="155">
+</p>
 
 ## Annotations
 
