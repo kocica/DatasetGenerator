@@ -8,10 +8,10 @@ out/*
 .vscode/*
 
 # Backgrounds
-data/backgrounds/*.jpg
+data/backgrounds/*
 
 # Cropped data from german classification dataset
-data/cropped/*/*.ppm
+data/cropped/*/*
 
 
 

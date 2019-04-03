@@ -62,7 +62,7 @@ int main(int argc, char **argv)
 	///////////////////////////////////////////////////////////////////////////////////////////////
 	// Load images & directories of classes
 
-	Utils::loadImages("jpg", pathToBackgrounds, bgs,  cv::IMREAD_COLOR);
+	Utils::loadImages("png", pathToBackgrounds, bgs,  cv::IMREAD_COLOR);
 	Utils::getDirectories(pathToImages, dirs);
 
 	///////////////////////////////////////////////////////////////////////////////////////////////

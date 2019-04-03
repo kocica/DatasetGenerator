@@ -83,19 +83,22 @@ int main(int argc, char **argv)
 			// Parse comma-separated line
 			std::vector<std::string> vec = split(line, ';');
 
+			//std::cerr << vec.at(NAME) << " " << vec.at(RX1) << " " << vec.at(RX2)
+			//			<< " " << vec.at(RY1) << " " << vec.at(RY2) << " " << vec.at(CLASS) << std::endl;
+
 			// Create annotation file
 			std::string annot = vec.at(NAME);
 			annot = annot.substr(0, annot.find_last_of('.')) + ".txt";
-			std::ofstream annotFile("annotation/" + annot);
+			std::ofstream annotFile("annotation/" + annot, std::ios_base::app);
 			
 			// Load annotated image
-			m = cv::imread(path + vec.at(NAME), cv::IMREAD_UNCHANGED);
+			m = cv::imread(path + "/" + vec.at(NAME), cv::IMREAD_UNCHANGED);
 
 			// Calculate YOLO relative annotations
-			x     = (std::stoi(vec.at(RX1)) + std::stoi(vec.at(RX2))) / 2.0;
-			y     = (std::stoi(vec.at(RY1)) + std::stoi(vec.at(RY2))) / 2.0;
-			imgW  = std::stoi(vec.at(WIDTH));
-			imgH  = std::stoi(vec.at(HEIGHT));
+			x     = std::stoi(vec.at(RX1));
+			y     = std::stoi(vec.at(RY1));
+			imgW  = 1628;
+			imgH  = 1236;
 			signW = std::stoi(vec.at(RX2)) - std::stoi(vec.at(RX1));
 			signH = std::stoi(vec.at(RY2)) - std::stoi(vec.at(RY1));
 
@@ -107,15 +110,13 @@ int main(int argc, char **argv)
 
 
 			// Test
-			/*int x2 = x - (signW / 2);
-			int y2 = y - (signH / 2);
-			int size_x = signW;
-			int size_y = signH;
-			cv::Point pt {x2, y2};
-			cv::Point pt2{x2 + size_x, y2 + size_y};
+			/*cv::Point pt {x, y};
+			cv::Point pt2{x + signW, y + signH};
 
-			cv::rectangle(m, pt, pt2, cv::Scalar{0, 255, 0});
-			cv::imshow("1", m); cv::waitKey(0);*/
+			cv::rectangle(m, pt, pt2, cv::Scalar{0, 255, 0}, 3);
+			cv::Mat m2;
+			cv::resize( m, m2, cv::Size{407, 309} );
+			cv::imshow("1", m2); cv::waitKey(0);*/
 		}
 	}
 	catch (std::exception& e)

@@ -2,6 +2,7 @@
 #include <fstream>
 #include <sstream>
 #include <vector>
+#include <algorithm>
 
 std::vector<std::string> split(const std::string &s, char delim)
 {
@@ -36,16 +37,20 @@ int main(int argc, char **argv)
 	std::ofstream outfile(argv[2]);
 	std::string   line;
 
+	std::vector<int32_t> classes = { 65, 80, 31, 34, 42, 57, 82, 59, 84, 87, 81, 32, 79, 39, 76 };
+
 	try
 	{
 		while (std::getline(infile, line))
 		{
 			std::vector<std::string> vec = split(line, ';');
 
-			if ( vec.at(CLASS) == "31" || vec.at(CLASS) == "39" || vec.at(CLASS) == "42" )
-			{
-				outfile << vec.at(NAME) << std::endl;
-			}
+			auto i = find( classes.begin(), classes.end(),  std::stoi( vec.at(CLASS) ) );
+
+		    if ( i != classes.end() )
+		    {
+		        outfile << vec.at(NAME) << std::endl;
+		    }
 		}
 	}
 	catch (std::exception& e)
