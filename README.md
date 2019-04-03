@@ -14,8 +14,8 @@ Tool works on simple principle of placing objects to the images of background on
 Cropped objects (used for classifier training) are placed to the images of background using Poisson blending [1].
 
 <br><b>Cropped traffic sign placed to the background with and without (right) Poisson blending</b>:<br>
-<img src="data/visual/cropped_1.png" alt="Cropped, without poisson blending" width="204" height="155">
-![alt text](data/visual/cropped_2.png =204x155)
+<img src="data/visual/cropped_1.png" alt="Cropped without poisson blending" width="204" height="155">
+<img src="data/visual/cropped_2.png" alt="Cropped with poisson blending" width="204" height="155">
 
 ### 2) Using few transparent objects
 
@@ -26,8 +26,8 @@ Before transparent objects are placed into background, few effects are applied t
 
 <br><b>Then objects are placed into background</b>:<br>
 
-![alt text](data/visual/synt_1.png =204x155)
-![alt text](data/visual/synt_2.jpg =204x155)
+<img src="data/visual/synt_1.png" alt="Transparent" width="204" height="155">
+<img src="data/visual/synt_2.png" alt="Transparent" width="204" height="155">
 
 ## Annotations
 
