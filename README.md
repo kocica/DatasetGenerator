@@ -27,7 +27,7 @@ Before transparent objects are placed into background, few effects are applied t
 <br><b>Then objects are placed into background</b>:<br>
 
 <img src="data/visual/synt_1.png" alt="Transparent" width="204" height="155">
-<img src="data/visual/synt_2.png" alt="Transparent" width="204" height="155">
+<img src="data/visual/synt_2.jpg" alt="Transparent" width="204" height="155">
 
 ## Annotations
 
