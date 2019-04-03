@@ -10,20 +10,33 @@ This simple repository provides implementation of full-image dataset generator. 
 
 Tool works on simple principle of placing objects to the images of background on the random positions and can work in two different ways.
 
-### 1) Using many cropped objects
+### 1) Using cropped objects
 Cropped objects (used for classifier training) are placed to the images of background using Poisson blending [1].
 
-<b>Cropped traffic sign placed to the background with and without (right) Poisson blending</b>:<br>
+<b>Cropped traffic sign placed to the background with (right) and without (left) Poisson blending</b>:<br>
 <p align="center">
   <img src="data/visual/cropped_1.png" alt="Cropped without poisson blending" width="204" height="155">
   <img src="data/visual/cropped_2.png" alt="Cropped with poisson blending" width="204" height="155">
 </p>
 
-### 2) Using few transparent objects
+### 2) Using transparent objects
 
-Before transparent objects are placed into background, few effects are applied to synthetically modify appearance of the object.
+Before transparent objects are placed into background, few effects are applied to synthetically modify appearance of the object. Whether or not are the effects applied is based on chosen probability (reflecting real-time conditions).
 
-<b>All effects applied on the traffic sign separately (original in the top left corner)</b>:<br>
+List of applied effects:
+
+ - Rotation in X, Y, Z axis
+ - Brightness modification (according to the brightness of the background)
+ - Gamma correction
+ - Blur
+ - Noise (Salt and papper, Gaussian)
+ - ROI selection
+ - Resize of the objects
+ - Hue modification
+ - Brightness gradient
+ - Object overlapping
+
+<b>Visual representation of all effects applied on the traffic sign separately (original in the top left corner)</b>:<br>
 <p align="center">
   <img src="data/visual/effects.png" alt="Effects">
 </p>
