@@ -1,4 +1,4 @@
-<h2 align="center">Dataset generator</h2>
+# Dataset generator
 
 This simple repository provides implementation of full-image dataset generator. Result synthetic dataset is supposed to be used for CNN (single-shot detector) training.
 
@@ -39,14 +39,15 @@ This tool is using YOLO [2] annotation format:
 
 ## Usage
 
- - Place images of the background (where objects should be placed, in case of traffic signs images should originate from the city-env) to the data/backgrounds
- - In case of using transparent objects, place them to `data/transparent` folder, otherwise to the `data/cropped`. Place each class to separate folder and save class name to imgClass file in same folder.
+ - Place images of the backgrounds (where objects should be placed - in case of traffic signs images should originate from the city-env) to the `data/backgrounds` folder
+ - In case of using transparent objects, place them to `data/transparent` folder, otherwise to the `data/cropped`. Place files of each class to separate folder and save unique class name to the imgClass file in same folder
  - In the Makefile, select (comment/uncomment) effects you want to be applied
  - Type `make` in the root folder
  - In case of using transparent objects, type `make runt`, otherwise `make runc`
- - Generated dataset should be in the `out/` folder
+ - Generated dataset should be in the `out` folder
  
 ## References
 
 [1] [Martino, Matías Di, Gabriele Facciolo and Enric Meinhardt. <em>"Poisson Image Editing."</em> IPOL Journal 6 (2016): 300-325.](https://dl.acm.org/citation.cfm?id=882269)
+
 [2] [Joseph Redmon, Santosh Divvala, Ross Girshick, Ali Farhadi. <em>"You Only Look Once: Unified, Real-Time Object Detection."</em> CoRR Journal (2015)](https://arxiv.org/abs/1506.02640)
