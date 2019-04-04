@@ -1,6 +1,6 @@
 # Dataset generator
 
-This simple repository provides implementation of full-image dataset generator. Result synthetic dataset is supposed to be used for CNN (single-shot detector) training.
+This simple repository provides implementation of full-image dataset generator. Resulting synthetic dataset is supposed to be used for CNN (primary single-shot detector) training.
 
 ## Dependencies
 
@@ -8,7 +8,7 @@ This simple repository provides implementation of full-image dataset generator. 
 
 ## About the tool
 
-Tool works on simple principle of placing objects to the images of background on the random positions and can work in two different ways.
+Tool works on simple principle of placing objects to the background images on the random positions and can work in two different ways.
 
 ### 1) Using cropped objects
 Cropped objects (used for classifier training) are placed to the images of background using Poisson blending [1].
@@ -55,10 +55,12 @@ This tool is using YOLO [2] annotation format:
 <object_class> <x> <y> <width> <height>
 ```
 
+Both oordinates and size are relative - values in the interval [0,1] - to the full image size.
+
 ## Usage
 
- - Place images of the backgrounds (where objects should be placed - in case of traffic signs images should originate from the city-env) to the `data/backgrounds` folder
- - In case of using transparent objects, place them to `data/transparent` folder, otherwise to the `data/cropped`. Place files of each class to separate folder and save unique class name to the imgClass file in same folder
+ - Place images of the backgrounds (where objects should be placed - in case of traffic signs, images should originate fro the city environment, but cannot contain any generated objects - they would miss the annotation and so negativelly bias the training process) to the `data/backgrounds` folder
+ - In case of using transparent objects, place them to `data/transparent` folder, otherwise to the `data/cropped` folder. Place files of each class to separate folder and save unique class name to the imgClass file in same folder
  - In the Makefile, select (comment/uncomment) effects you want to be applied
  - Type `make` in the root folder
  - In case of using transparent objects, type `make runt`, otherwise `make runc`
@@ -70,7 +72,13 @@ Video evaluated using model trained on the traffic sign synthetic dataset genera
 
 <a href="http://www.youtube.com/watch?feature=player_embedded&v=J9hYBg76nNQ" target="_blank"><img src="http://img.youtube.com/vi/J9hYBg76nNQ/0.jpg"
 alt="Traffic sign detection" width="240" height="180" border="10" /></a>
- 
+
+## Future work
+
+ - Load both - selected effects and applied value ranges from the configuration file.
+ - For more realistic synthetic dataset, perform 3D analyzation of the both background image and object to be placed to the background.
+ - Further research on synthetic dataset CNN training (i.e. what does bias the training, what improves the overall performance, etc.)
+
 ## References
 
 [1] [Martino, Matías Di, Gabriele Facciolo and Enric Meinhardt. <em>"Poisson Image Editing."</em> IPOL Journal 6 (2016): 300-325.](https://dl.acm.org/citation.cfm?id=882269)
