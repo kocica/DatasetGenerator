@@ -8,7 +8,7 @@ This simple repository provides implementation of full-image dataset generator. 
 
 ## About the tool
 
-Tool works on simple principle of placing objects to the background images on the random positions and can work in two different ways.
+Tool works on simple principle of placing objects to the background images on the random positions and can work in two slightly different ways, depending on what type of data is available for your use-case.
 
 ### 1) Using cropped objects
 Cropped objects (used for classifier training) are placed to the images of background using Poisson blending [1].
@@ -47,6 +47,8 @@ List of applied effects:
   <img src="data/visual/synt_2.jpg" alt="Transparent" width="204" height="155">
 </p>
 
+In general, second approach has better results. Combination of both approaches does not work better. By far the best results have been achieved using combination of many synthetic images in combination with few real labeled images, which keeps training in the right direction.
+
 ## Annotations
 
 This tool is using YOLO [2] annotation format:
@@ -55,12 +57,12 @@ This tool is using YOLO [2] annotation format:
 <object_class> <x> <y> <width> <height>
 ```
 
-Both oordinates and size are relative - values in the interval [0,1] - to the full image size.
+Both, object oordinates and size are relative - values in the interval (0,1) - to the full image size.
 
 ## Usage
 
- - Place images of the backgrounds (where objects should be placed - in case of traffic signs, images should originate fro the city environment, but cannot contain any generated objects - they would miss the annotation and so negativelly bias the training process) to the `data/backgrounds` folder
- - In case of using transparent objects, place them to `data/transparent` folder, otherwise to the `data/cropped` folder. Place files of each class to separate folder and save unique class name to the imgClass file in same folder
+ - Place images of the backgrounds (where objects should be placed - in case of the traffic signs, images should originate from the city environment, but cannot contain any of the generated objects - they would miss the annotation and so negativelly bias the training process) to the `data/backgrounds` folder
+ - In case of using transparent objects, place them to the `data/transparent` folder, otherwise to the `data/cropped` folder. Place files of each class to separate folders and save unique class name to the `imgClass` file located in the same folder
  - In the Makefile, select (comment/uncomment) effects you want to be applied
  - Type `make` in the root folder
  - In case of using transparent objects, type `make runt`, otherwise `make runc`
