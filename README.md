@@ -35,8 +35,9 @@ List of applied effects:
  - Hue modification
  - Brightness gradient
  - Object overlapping
+ - Flipping (but be aware: some objscts may have different meaning, e.g. left and right arrow, hand, etc.)
 
-<b>Visual representation of all effects applied on the traffic sign separately (original in the top left corner)</b>:<br>
+<b>Visual representation of most effects applied on the traffic sign separatelly (original image in the top left corner)</b>:<br>
 <p align="center">
   <img src="data/visual/effects.png" alt="Effects">
 </p>
