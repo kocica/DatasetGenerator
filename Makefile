@@ -16,25 +16,48 @@ SRC        = src
 CC         = g++
 CFLAGS     = -std=c++17
 LDFLAGS    = `pkg-config --libs opencv` -lstdc++fs
+DOXYGEN    = doxygen
+CFG        = cfg
 
 HEADERS    = $(wildcard $(SRC)/*.h)
 SOURCES    = $(wildcard $(SRC)/*.cpp)
 OBJS       = $(patsubst %.cpp, %.o, $(SOURCES))
 
+.PHONY: all
+
+
+
+# =================== Data used selection =====================
+
+# Leave in case of using transparent images with alpha channel
+# otherwise if using cropped images -- comment out this line
+CFLAGS    += -DIMG_TRANSPARENT
+
+
+
+# ================== General configuration ====================
+
 # Generated image has random Width and Height
 #CFLAGS    += -DRANDOM_W_H
 
-# Using transparent images with alpha channel
-CFLAGS    += -DIMG_TRANSPARENT
-
-# Selection of ROIs where signs are generated
+# Selection of ROIs where signs are placed
 #CFLAGS    += -DROI_SELECTION
+
+# The closer to middle of image TS is, the smaller it is
+#CFLAGS    += -DREALISTIC_SIZE
+
+# Create annotation file for each generated image
+CFLAGS    += -DANNOTATION
 
 # Debug info, show annotation bounding-boxes
 #CFLAGS    += -DGENERATOR_DEBUG
 
+
+
+# ======================== Transparent ========================
+
 # Blue traffic signs
-#CFLAGS    += -DBLUR
+CFLAGS    += -DBLUR
 
 # Rotate TS in Y axis
 CFLAGS    += -DROTATE_Y
@@ -66,17 +89,16 @@ CFLAGS    += -DREALISTIC_LIGHTNING
 # Add partial traffic sign to dataset
 CFLAGS    += -DPARTIAL_TS
 
-# The closer to middle of image TS is, the smaller is
-#CFLAGS    += -DREALISTIC_SIZE
+
+
+# ========================== Cropped ==========================
 
 # Seamless cloning of cropped signs to background
 CFLAGS    += -DSEAMLESS_CLONE
 
-# Create annotation file for each generated image
-CFLAGS    += -DANNOTATION
 
 
-################## Compilation ##################
+# ======================== Compilation ========================
 
 all: $(BIN_NAME)
 
@@ -87,11 +109,12 @@ $(BIN_NAME): $(HEADERS) $(SOURCES) $(OBJS)
 	$(CC) $(CFLAGS) -c $< -o $@
 
 
-################## Pack/Clean/Run ##################
 
-.PHONY: clean
+# ======================= Doc/Clean/Run =======================
 
-# Clean compiled objects and binary
+.PHONY: all
+
+# Clean compiled objects and binary file
 clean:
 	rm -f $(BIN_NAME) $(SRC)/*.o
 
@@ -106,3 +129,8 @@ runt:
 # Run cropped generator
 runc:
 	./$(BIN_NAME) data/backgrounds/ data/cropped
+
+# Generate code documentation
+$(DOC):
+	mkdir -p $(DOC)
+	$(DOXYGEN) $(CFG)/doxyConf

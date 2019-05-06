@@ -1,4 +1,4 @@
-# Dataset generator
+﻿# Dataset generator
 
 This simple repository provides implementation of full-image dataset generator. Resulting synthetic dataset is supposed to be used for CNN (primary single-shot detector) training.
 
@@ -15,8 +15,8 @@ Cropped objects (used for classifier training) are placed to the images of backg
 
 <b>Cropped traffic sign placed to the background with (right) and without (left) Poisson blending</b>:<br>
 <p align="center">
-  <img src="data/visual/cropped_1.png" alt="Cropped without poisson blending" width="204" height="155">
-  <img src="data/visual/cropped_2.png" alt="Cropped with poisson blending" width="204" height="155">
+  <img src="data/readme_imgs/cropped_1.png" alt="Cropped without poisson blending" width="204" height="155">
+  <img src="data/readme_imgs/cropped_2.png" alt="Cropped with poisson blending" width="204" height="155">
 </p>
 
 ### 2) Using transparent objects
@@ -39,13 +39,13 @@ List of applied effects:
 
 <b>Visual representation of most effects applied on the traffic sign separatelly (original image in the top left corner)</b>:<br>
 <p align="center">
-  <img src="data/visual/effects.png" alt="Effects">
+  <img src="data/readme_imgs/effects.png" alt="Effects">
 </p>
 
 <b>Then objects are placed into background</b>:<br>
 <p align="center">
-  <img src="data/visual/synt_1.png" alt="Transparent" width="204" height="155">
-  <img src="data/visual/synt_2.jpg" alt="Transparent" width="204" height="155">
+  <img src="data/readme_imgs/synt_1.png" alt="Transparent" width="204" height="155">
+  <img src="data/readme_imgs/synt_2.jpg" alt="Transparent" width="204" height="155">
 </p>
 
 In general, second approach has better results. Combination of both approaches does not work better. By far the best results have been achieved using combination of many synthetic images in combination with few real labeled images, which keeps training in the right direction.

@@ -13,6 +13,8 @@ data/backgrounds/*
 # Cropped data from german classification dataset
 data/cropped/*/*
 
+# Generated code documentation
+doc/*
 
 
 # Prerequisites
