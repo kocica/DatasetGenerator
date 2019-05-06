@@ -4,14 +4,14 @@ datagen
 # Output
 out/*
 
-# vscode
+# Local IDE cfg
 .vscode/*
 
 # Backgrounds
-#data/backgrounds/*
+data/backgrounds/*
 
 # Cropped data from german classification dataset
-#data/cropped/*/*
+data/cropped/*/*
 
 
 
